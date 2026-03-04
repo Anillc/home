@@ -7,6 +7,9 @@
   nixpkgs.config.allowUnfree = true;
   xdg.enable = true;
 
+  # nix
+  programs.nix-index-database.comma.enable = true;
+
   # gpg
   programs.gpg = {
     enable = true;

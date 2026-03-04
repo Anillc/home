@@ -1,8 +1,9 @@
 {
   inputs.home-manager.url = "github:Anillc/home-manager/systemd-user-root";
   inputs.deploy.url = "github:serokell/deploy-rs";
+  inputs.nix-index-database.url = "github:nix-community/nix-index-database";
   outputs = inputs@{
-    self, nixpkgs, flake-parts, sops-nix, home-manager, deploy,
+    self, nixpkgs, flake-parts, sops-nix, home-manager, deploy, nix-index-database,
   }: flake-parts.lib.mkFlake { inherit inputs; } {
     debug = true;
     systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
@@ -30,6 +31,7 @@
           modules = [
             ./profiles/${name}
             sops-nix.homeManagerModules.sops
+            nix-index-database.homeModules.default
           ];
         };
       })
