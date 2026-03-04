@@ -2,6 +2,7 @@
   home.stateVersion = "25.11";
   home.username = lib.mkDefault "anillc";
   home.homeDirectory = lib.mkDefault "/home/anillc";
+  sops.gnupg.home = "${config.home.homeDirectory}/.gnupg";
 
   nixpkgs.config.allowUnfree = true;
   xdg.enable = true;

@@ -26,7 +26,10 @@
         value = home-manager.lib.homeManagerConfiguration rec {
           pkgs = import nixpkgs { system = "x86_64-linux"; };
           extraSpecialArgs.fetch = pkgs.callPackage ./fetch/_sources/generated.nix {};
-          modules = [ (./profiles/${name}) ];
+          modules = [
+            ./profiles/${name}
+            sops-nix.homeManagerModules.sops
+          ];
         };
       })
       |> builtins.listToAttrs;
