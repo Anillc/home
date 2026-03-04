@@ -4,6 +4,12 @@
     enableExtraSocket = true;
     pinentry.package = pkgs.pinentry-gnome3;
   };
+  programs.ssh = {
+    enable = true;
+    enableDefaultConfig = false;
+    matchBlocks."*".user = "root";
+  };
+
   programs.ghostty = {
     enable = true;
     settings.keybind = [
