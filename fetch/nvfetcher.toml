@@ -1,0 +1,7 @@
+[rime-prelude]
+src.git = "https://github.com/rime/rime-prelude.git"
+fetch.github = "rime/rime-prelude"
+
+[rime-flypy]
+src.git = "https://github.com/cubercsl/rime-flypy.git"
+fetch.github = "cubercsl/rime-flypy"

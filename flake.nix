@@ -9,7 +9,7 @@
       devShells.default = pkgs.mkShell {
         buildInputs = with pkgs; [];
         nativeBuildInputs = with pkgs; [
-          sops
+          sops nvfetcher
           home-manager.packages.${system}.default
         ];
         shellHook = ''
@@ -21,8 +21,9 @@
       |> builtins.attrNames
       |> map (name: {
         name = builtins.elemAt (builtins.split "\\." name) 0;
-        value = home-manager.lib.homeManagerConfiguration {
+        value = home-manager.lib.homeManagerConfiguration rec {
           pkgs = import nixpkgs { system = "x86_64-linux"; };
+          extraSpecialArgs.fetch = pkgs.callPackage ./fetch/_sources/generated.nix {};
           modules = [ (./profiles/${name}) ];
         };
       })

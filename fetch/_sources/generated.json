@@ -1,0 +1,44 @@
+{
+    "rime-flypy": {
+        "cargoLock": null,
+        "date": "2025-12-27",
+        "extract": null,
+        "name": "rime-flypy",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "cubercsl",
+            "repo": "rime-flypy",
+            "rev": "ea9455f25995a2878485c85b111c34a2a897adac",
+            "sha256": "sha256-Lw54pNXUzsVv9OFp7c5Bf+pCCA0DWTslSTrN/raX9CM=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "ea9455f25995a2878485c85b111c34a2a897adac"
+    },
+    "rime-prelude": {
+        "cargoLock": null,
+        "date": "2025-12-30",
+        "extract": null,
+        "name": "rime-prelude",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "rime",
+            "repo": "rime-prelude",
+            "rev": "db691d2420b8e656a79692a94f9db0fb3e7aa12b",
+            "sha256": "sha256-sllcT3Kq572xJvlh+j4zN0AUblFzXlhZtL9RGT/GY7g=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "db691d2420b8e656a79692a94f9db0fb3e7aa12b"
+    }
+}
