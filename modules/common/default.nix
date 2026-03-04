@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }: {
+{ config, pkgs, lib, ... }: {
   home.stateVersion = "25.11";
   home.username = lib.mkDefault "anillc";
   home.homeDirectory = lib.mkDefault "/home/anillc";
@@ -42,13 +42,26 @@
   };
 
   # shell
+  programs.bash = {
+    enable = true;
+    bashrcExtra = ''
+      if ${pkgs.gnugrep}/bin/grep -qv 'fish' /proc/$PPID/comm && [[ $SHLVL == [1,2] ]]; then
+      	shopt -q login_shell && LOGIN_OPTION="--login" || LOGIN_OPTION=""
+      	exec ${config.programs.fish.package}/bin/fish $LOGIN_OPTION
+      fi
+    '';
+  };
   programs.fish = {
     enable = true;
     plugins = with pkgs.fishPlugins; [ plugin-git done puffer ]
       |> map (x: { name = x.pname; inherit (x) src; });
-    shellInit = ''
-      alias pb="curl --data-binary @- https://pb.nichi.co/"
-      alias s="systemctl"
+    shellAliases = {
+      pb = "curl --data-binary @- https://pb.nichi.co/";
+      s = "systemctl";
+      suser = "systemctl --user";
+    };
+    interactiveShellInit = ''
+      set fish_greeting
       fish_vi_key_bindings
       for mode in (bind --list-modes)
         bind -M $mode ctrl-c cancel-commandline
