@@ -1,6 +1,7 @@
 {
+  inputs.deploy.url = "github:serokell/deploy-rs";
   outputs = inputs@{
-    self, nixpkgs, flake-parts, sops-nix, home-manager,
+    self, nixpkgs, flake-parts, sops-nix, home-manager, deploy,
   }: flake-parts.lib.mkFlake { inherit inputs; } {
     debug = true;
     systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
@@ -11,6 +12,7 @@
         nativeBuildInputs = with pkgs; [
           sops nvfetcher
           home-manager.packages.${system}.default
+          deploy.packages.${system}.default
         ];
         shellHook = ''
           ln -sf ${config.sops.result} .sops.yaml
@@ -28,5 +30,13 @@
         };
       })
       |> builtins.listToAttrs;
+    flake.deploy.nodes = self.homeConfigurations
+      |> builtins.mapAttrs (_: value: let
+        system = value.pkgs.stdenv.buildPlatform.system;
+        path = deploy.lib.${system}.activate.home-manager value;
+      in {
+        profiles.home-manager = { inherit path; };
+        hostname = ""; # we pass this via CLI
+      });
   };
 }

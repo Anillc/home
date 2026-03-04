@@ -45,9 +45,9 @@
   programs.bash = {
     enable = true;
     bashrcExtra = ''
-      if ${pkgs.gnugrep}/bin/grep -qv 'fish' /proc/$PPID/comm && [[ $SHLVL == [1,2] ]]; then
+      if ${pkgs.gnugrep}/bin/grep -qv 'fish' /proc/$PPID/comm && [[ $SHLVL == [1,2] ]] && [[ -z "$BASH_EXECUTION_STRING" ]]; then
       	shopt -q login_shell && LOGIN_OPTION="--login" || LOGIN_OPTION=""
-      	exec ${config.programs.fish.package}/bin/fish $LOGIN_OPTION
+      	SHELL=${config.programs.fish.package}/bin/fish exec ${config.programs.fish.package}/bin/fish $LOGIN_OPTION
       fi
     '';
   };
