@@ -2,7 +2,10 @@
   programs.atuin = {
     enable = true;
     daemon.enable = true;
-    settings.sync_address = "https://atuin.ani.llc";
+    settings = {
+      sync_address = "https://atuin.ani.llc";
+      enter_accept = true;
+    };
   };
   sops.secrets.atuin-login.sopsFile = ./secrets.trusted.yaml;
   systemd.user.services.atuin-login = {
