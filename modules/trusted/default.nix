@@ -6,6 +6,7 @@
   };
   sops.secrets.atuin-login.sopsFile = ./secrets.trusted.yaml;
   systemd.user.services.atuin-login = {
+    Unit.After = [ "sops-nix.service" ];
     Install.WantedBy = [ "default.target" ];
     Service = {
       Type = "oneshot";

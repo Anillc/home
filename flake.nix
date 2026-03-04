@@ -1,4 +1,5 @@
 {
+  inputs.home-manager.url = "github:Anillc/home-manager/systemd-user-root";
   inputs.deploy.url = "github:serokell/deploy-rs";
   outputs = inputs@{
     self, nixpkgs, flake-parts, sops-nix, home-manager, deploy,
