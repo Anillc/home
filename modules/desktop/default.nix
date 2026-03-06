@@ -43,7 +43,6 @@
     enable = true;
     type = "fcitx5";
     fcitx5 = {
-      ignoreUserConfig = true;
       addons = let
         rime-flypy = pkgs.callPackage ({ stdenv, fetchFromGitHub, librime, ... }: stdenv.mkDerivation {
           inherit (fetch.rime-flypy) pname version src;
