@@ -21,4 +21,7 @@
       ''}";
     };
   };
+
+  sops.secrets.wakatime.sopsFile = ./secrets.trusted.yaml;
+  home.file.".wakatime.cfg".source = config.lib.file.mkOutOfStoreSymlink config.sops.secrets.wakatime.path;
 }
