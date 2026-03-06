@@ -1,4 +1,6 @@
 { config, pkgs, lib, ... }: {
+  imports = [ ./nixvim.nix ];
+
   home.stateVersion = "25.11";
   home.username = lib.mkDefault "anillc";
   home.homeDirectory = lib.mkDefault "/home/anillc";
@@ -50,8 +52,8 @@
     enable = true;
     bashrcExtra = ''
       if ${pkgs.gnugrep}/bin/grep -qv 'fish' /proc/$PPID/comm && [[ $SHLVL == [1,2] ]] && [[ -z "$BASH_EXECUTION_STRING" ]]; then
-      	shopt -q login_shell && LOGIN_OPTION="--login" || LOGIN_OPTION=""
-      	SHELL=${config.programs.fish.package}/bin/fish exec ${config.programs.fish.package}/bin/fish $LOGIN_OPTION
+        shopt -q login_shell && LOGIN_OPTION="--login" || LOGIN_OPTION=""
+        SHELL=${config.programs.fish.package}/bin/fish exec ${config.programs.fish.package}/bin/fish $LOGIN_OPTION
       fi
     '';
   };
