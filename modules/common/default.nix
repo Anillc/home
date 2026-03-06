@@ -59,7 +59,7 @@
   };
   programs.fish = {
     enable = true;
-    plugins = with pkgs.fishPlugins; [ plugin-git done puffer ]
+    plugins = with pkgs.fishPlugins; [ plugin-git done puffer z ]
       |> map (x: { name = x.pname; inherit (x) src; });
     shellAliases = {
       pb = "curl --data-binary @- https://pb.nichi.co/";
