@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }: {
+{ inputs, config, pkgs, lib, ... }: {
   imports = [ ./nixvim.nix ];
 
   home.stateVersion = "25.11";
@@ -10,6 +10,15 @@
   xdg.enable = true;
 
   # nix
+  nix = {
+    package = pkgs.nix;
+    nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
+    registry.p.flake = inputs.nixpkgs;
+    settings = {
+      experimental-features = [ "nix-command" "flakes" "pipe-operators" ];
+      substituters = lib.mkBefore [ "https://mirrors.sjtug.sjtu.edu.cn/nix-channels/store" ];
+    };
+  };
   programs.nix-index-database.comma.enable = true;
 
   # gpg
