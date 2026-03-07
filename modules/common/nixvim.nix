@@ -17,6 +17,10 @@
       };
       keymaps = [
         { mode = "i"; key = "jj"; action = "<Esc>"; }
+        { mode = "i"; key = "<C-k>"; action = "<Up>"; }
+        { mode = "i"; key = "<C-j>"; action = "<Down>"; }
+        { mode = "i"; key = "<C-h>"; action = "<Left>"; }
+        { mode = "i"; key = "<C-l>"; action = "<Right>"; }
         { mode = "n"; key = "<leader><Tab>"; action = ":bn<CR>"; }
         { mode = "n"; key = "<leader><S-Tab>"; action = ":bp<CR>"; }
         { mode = "n"; key = "<leader>d"; action = ":bd<CR>"; }
@@ -58,6 +62,12 @@
 
       # multicursor
       utility.multicursors.enable = true;
+      lazy.plugins.multicursors-nvim.keys = lib.mkForce [
+        { mode = [ "n" "v" ]; key = "<leader>mcu"; action = ":MCunderCursor<CR>"; }
+        { mode = [ "n" "v" ]; key = "<leader>mcp"; action = ":MCpattern<CR>"; }
+        { mode = [ "n" "v" ]; key = "<leader>mcv"; action = ":MCvisual<CR>"; }
+        { mode = [ "n" "v" ]; key = "<leader>mcb"; action = ":MCvisualPattern<CR>"; }
+      ];
 
       # comment-nvim
       comments.comment-nvim = {
