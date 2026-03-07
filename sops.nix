@@ -43,10 +43,10 @@ in {
     final = [ "FCCC 1B0B DF14 FEE4 B66C  3A40 CA5B 1409 FBA7 BF66" ];
     trusted_desktops = [ "age1p9vcj2y2q59reuswpwjdqj8j3gz5yhz77qm9qeua4f5cc3xe8gqqf698t8" ];
     trusted_servers = [
-      "age1xzeru626ugw2znueqy034nme56fvf29pq2q3zq4609ajdn2hvdjqnm3vtu" # cola
-      "age1efsd4ax034a5kwa092tg5puv4dg0hpxyt45dlytn5c5g6dwml9ysnhhsfa" # hk
-      "age1vzu6hgq87xqz3k352x0x4mz6n63p32xgwt0ek7cha6sfjusxacgqydx8rr" # home
-      "age1p9906crzyha38je9a9zx6zpzlqrff9kpr44euwxlf8gg8n8tva8s5x0ujk" # trunc
+      "age14qre8mr77uwwpzsk8na65ex92ulfewus37prer4yl62pjsdq7f6srrxpmu" # cola
+      "age1z0tt5kr6maz5wv35pc73w7h5wrt0hpl06c7alskj6yuvttfrz9vqt75fzv" # hk
+      "age1t6wjdm624k6fqcdy8m5ayj3ff6s8dpylqq24q78alwrvrrjq0vesxp8906" # home
+      "age1380glkudxufzscly9e5ne68uns9dge39vns4ckanjhrxdfd979kq8wkcdn" # trunc
     ];
     untrusted_servers = [ "EBD0 58E3 26C8 A442 F24E  14AD 5F42 E8EC FF1C C9D4!" ];
   in {

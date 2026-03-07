@@ -16,8 +16,8 @@
       RemainAfterExit = true;
       ExecStart = "${pkgs.writeScript "atuin-login" ''
         #!${pkgs.runtimeShell}
-        export PATH=$PATH:${lib.makeBinPath [ pkgs.atuin ]}
-        cat ${config.sops.secrets.atuin-login.path} | xargs -0 bash -c || true
+        export PATH=$PATH:${lib.makeBinPath (with pkgs; [ coreutils bash atuin ])}
+        bash ${config.sops.secrets.atuin-login.path} || true
       ''}";
     };
   };
