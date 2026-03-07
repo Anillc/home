@@ -89,6 +89,7 @@
       pb = "curl --data-binary @- https://pb.nichi.co/";
       s = "systemctl";
       suser = "systemctl --user";
+      v = "nvim";
     };
     interactiveShellInit = ''
       set fish_greeting
