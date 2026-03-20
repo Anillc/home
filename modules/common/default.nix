@@ -95,9 +95,6 @@
       set fish_greeting
       fish_vi_key_bindings
       bind -M insert -m default jj backward-char force-repaint
-      function back_to_normal --on-event fish_prompt
-      	fish_vi_key_bindings "default"
-      end
       for mode in (bind --list-modes)
         bind -M $mode ctrl-c cancel-commandline
       end
