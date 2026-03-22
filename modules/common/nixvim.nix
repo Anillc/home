@@ -131,6 +131,24 @@
               auto_show_delay_ms = 500;
             };
           };
+          cmdline = {
+            completion.menu.auto_show = true;
+            keymap = lib.mkForce {
+              preset = "inherit";
+
+              "<Esc>" = [
+                "hide"
+                # workaround for https://github.com/saghen/blink.cmp/issues/547
+                (lib.generators.mkLuaInline ''
+                  function()
+                    if vim.fn.getcmdtype() ~= "" then
+                      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<C-c>', true, true, true), 'n', true)
+                    end
+                  end
+                '')
+              ];
+            };
+          };
           keymap = lib.mkForce {
             preset = "none";
 
