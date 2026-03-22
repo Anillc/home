@@ -14,6 +14,8 @@
         cursorline = true;
         wrap = false;
         winborder = "single";
+        list = true;
+        listchars = "space:·,tab: →";
       };
       keymaps = [
         { mode = "i"; key = "jj"; action = "<Esc>"; }
@@ -29,6 +31,9 @@
         { mode = [ "n" "v" ]; key = "<leader>y"; action = "\"+y"; }
         { mode = [ "n" "v" ]; key = "<leader>p"; action = "\"+p"; }
       ];
+
+      # indent-blankline
+      visuals.indent-blankline.enable = true;
 
       # whichKey
       binds.whichKey.enable = true;
