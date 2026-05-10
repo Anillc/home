@@ -1,5 +1,5 @@
 { inputs, config, pkgs, lib, ... }: {
-  imports = [ ./nixvim.nix ];
+  imports = [ ./nvf.nix ];
 
   home.stateVersion = "25.11";
   home.username = lib.mkDefault "anillc";
@@ -68,6 +68,7 @@
         name = "Anillc";
         email = "void@anil.lc";
       };
+      protocol.file.allow = "always";
     };
   };
 
