@@ -76,7 +76,7 @@ in {
       age = trusted_servers;
     };
     result = pkgs.writeText ".sops.yaml" (toYAML {
-      creation_rules = lib.attrValues cfg.rules;
+      creation_rules = lib.attrValues cfg.rules |> map (x: x.result);
     });
   };
 }
