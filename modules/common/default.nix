@@ -18,7 +18,7 @@
     registry.p.flake = inputs.nixpkgs;
     settings = {
       experimental-features = [ "nix-command" "flakes" "pipe-operators" ];
-      substituters = lib.mkBefore [ "https://mirrors.sjtug.sjtu.edu.cn/nix-channels/store" ];
+      substituters = lib.mkBefore [ "https://mirror.sjtu.edu.cn/nix-channels/store" ];
     };
   };
   programs.nix-index-database.comma.enable = true;
