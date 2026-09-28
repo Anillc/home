@@ -7,7 +7,7 @@
       enter_accept = true;
     };
   };
-  sops.secrets.atuin-login.sopsFile = ./secrets.trusted.yaml;
+  sops.secrets.atuin-login.sopsFile = ./secrets.tier3.yaml;
   systemd.user.services.atuin-login = {
     Unit.After = [ "sops-nix.service" ];
     Install.WantedBy = [ "default.target" ];
@@ -22,6 +22,6 @@
     };
   };
 
-  sops.secrets.wakatime.sopsFile = ./secrets.trusted.yaml;
+  sops.secrets.wakatime.sopsFile = ./secrets.tier3.yaml;
   home.file.".wakatime.cfg".source = config.lib.file.mkOutOfStoreSymlink config.sops.secrets.wakatime.path;
 }
