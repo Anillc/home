@@ -1,12 +1,17 @@
 let
   modules = [
-    ../modules/common
-    ../modules/trusted
+    ../modules/core.nix
+    ../modules/nix.nix
+    ../modules/gpg.nix
+    ../modules/git.nix
+    ../modules/shell.nix
+    ../modules/nvf.nix
+    ../modules/atuin
   ];
 in {
   imports = modules;
   secrets = {
-    inherit modules;
+    modules = [ ../modules/atuin ];
     keys.age = [
       "age14qre8mr77uwwpzsk8na65ex92ulfewus37prer4yl62pjsdq7f6srrxpmu" # cola
       "age1z0tt5kr6maz5wv35pc73w7h5wrt0hpl06c7alskj6yuvttfrz9vqt75fzv" # hk
