@@ -117,9 +117,6 @@
       # gitsigns
       git.gitsigns.enable = true;
 
-      # wakatime
-      utility.vim-wakatime.enable = true;
-
       # blink-cmp
       autocomplete.blink-cmp = {
         enable = true;
