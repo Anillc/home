@@ -7,7 +7,7 @@
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
-    matchBlocks."*".user = "root";
+    settings."Host *".User = "root";
   };
 
   programs.ghostty = {

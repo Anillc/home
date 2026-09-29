@@ -179,9 +179,11 @@
         yaml.enable = true;
         bash.enable = true;
         clang.enable = true;
-        scala.enable = true;
+        # https://github.com/NotAShelf/nvf/blob/95afe7a794216f53e217c5148c6fbe0b668192cf/modules/plugins/languages/scala.nix#L137
+        # vim.lsp.with is deprecated
+        # scala.enable = true;
         rust.enable = true;
-        ts.enable = true;
+        typescript.enable = true;
         typst.enable = true;
         go.enable = true;
         # TODO: volar meson

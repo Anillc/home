@@ -1,5 +1,4 @@
 {
-  inputs.home-manager.url = "github:Anillc/home-manager/systemd-user-root";
   inputs.deploy.url = "github:serokell/deploy-rs";
   inputs.nix-index-database.url = "github:nix-community/nix-index-database";
   inputs.nvf.url = "github:NotAShelf/nvf";
