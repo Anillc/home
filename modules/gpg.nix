@@ -18,12 +18,8 @@
         uDgEYlQbxxIKKwYBBAGXVQEFAQEHQEnL7lC9znrT/5JAj+L8H+Fbp+cXfLA2egXe
         GCZQPsghAwEIB4h4BBgWCgAgFiEEYUEeT/4QznsuFM12C+ioj0eyFFwFAmJUG8cC
         GwwACgkQC+ioj0eyFFydTwD9HR3MQjvcLpwmpGcW85YVSJHWdZa2NyqV+wp3i5o9
-        OdQA/2QY/hB8BJRkadJwQDg4Op2WgOR+puTjM3XWoCVp6qUGuDgEaafJihIKKwYB
-        BAGXVQEFAQEHQNDct9vVHdluiwY+ZKsSMs+do8cqUKSN4A4nZ42c8ag6AwEIB4h+
-        BBgWCgAmFiEEYUEeT/4QznsuFM12C+ioj0eyFFwFAmmnyYoCGwwFCQDtTgAACgkQ
-        C+ioj0eyFFx8cgEA6APbyS+rJ/L5pcf0tqmZkdVrAAv/XH/1QxnVw1s1g00BAJ1Y
-        Gm92ram5H71aM1OJMhuuj1zKakC+0Mx2w1kUU/8M
-        =gV+p
+        OdQA/2QY/hB8BJRkadJwQDg4Op2WgOR+puTjM3XWoCVp6qUG
+        =beet
         -----END PGP PUBLIC KEY BLOCK-----
       '';
     } ];
