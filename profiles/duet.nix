@@ -9,6 +9,7 @@ let
     ../modules/atuin
     ../modules/gpg-agent.nix
     ../modules/ssh.nix
+    ../modules/codex.nix
     ../modules/ghostty.nix
     ../modules/vivaldi.nix
     ../modules/fcitx5.nix
