@@ -13,11 +13,12 @@ let
     ../modules/ghostty.nix
     ../modules/vivaldi.nix
     ../modules/fcitx5.nix
+    ../modules/multica
   ];
 in {
   imports = modules;
   secrets = {
-    modules = [ ../modules/atuin ];
+    modules = [ ../modules/atuin ../modules/multica ];
     keys.age = [
       "age1p9vcj2y2q59reuswpwjdqj8j3gz5yhz77qm9qeua4f5cc3xe8gqqf698t8" # duet
     ];
