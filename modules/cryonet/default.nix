@@ -99,4 +99,27 @@ in {
       RuntimeDirectory = "cryonet";
     };
   };
+
+  systemd.user.services.cryonet-address = {
+    Unit = {
+      PartOf = [ "cryonet.service" ];
+      After = [ "cryonet.service" ];
+    };
+    Install.WantedBy = [ "default.target" ];
+    Service = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${cryonet-ns-enter}/bin/cryonet-ns-enter ${pkgs.writeShellScript "cryonet-address" ''
+        set -euo pipefail
+        export PATH=$PATH:${lib.makeBinPath (with pkgs; [ coreutils iproute2 ])}
+
+        while ! ip link show cn0; do
+          sleep 0.5
+        done
+
+        ip link set cn0 up
+        ip address replace 10.11.0.252/24 dev cn0
+      ''}";
+    };
+  };
 }
