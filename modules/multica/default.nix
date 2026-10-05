@@ -8,7 +8,12 @@
       Type = "simple";
       Restart = "always";
       RestartSec = 5;
-      Path = lib.makeBinPath [ pkgs.multica-cli pkgs.coreutils config.programs.codex.package ];
+      Environment = [ "PATH=${lib.makeBinPath [
+        pkgs.multica-cli
+        pkgs.coreutils
+        pkgs.findutils
+        config.programs.codex.package
+      ]}" ];
       ExecStart = "${pkgs.writeScript "multica-daemon" ''
         #!${pkgs.runtimeShell}
         set -e
