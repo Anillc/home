@@ -2,8 +2,9 @@
   inputs.deploy.url = "github:serokell/deploy-rs";
   inputs.nix-index-database.url = "github:nix-community/nix-index-database";
   inputs.nvf.url = "github:NotAShelf/nvf";
+  inputs.cryonet.url = "github:kagari-org/cryonet";
   outputs = inputs@{
-    self, nixpkgs, flake-parts, sops-nix, home-manager, deploy, nix-index-database, nvf,
+    self, nixpkgs, flake-parts, sops-nix, home-manager, deploy, nix-index-database, nvf, ...
   }: flake-parts.lib.mkFlake { inherit inputs; } {
     imports = [ ./sops.nix ];
     debug = true;

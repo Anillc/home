@@ -14,6 +14,7 @@ let
     ../modules/vivaldi.nix
     ../modules/fcitx5.nix
     ../modules/multica
+    ../modules/cryonet
   ];
 in {
   imports = modules;
