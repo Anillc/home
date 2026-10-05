@@ -4,6 +4,7 @@ let
     ../modules/nix.nix
     ../modules/gpg.nix
     ../modules/git.nix
+    ../modules/gh.nix
     ../modules/shell.nix
     ../modules/nvf.nix
     ../modules/atuin
