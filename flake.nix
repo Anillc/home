@@ -23,16 +23,20 @@
     };
     flake.homeConfigurations = builtins.readDir ./profiles
       |> builtins.attrNames
-      |> map (name: {
-        name = builtins.elemAt (builtins.split "\\." name) 0;
+      |> map (file: let
+        splited = nixpkgs.lib.splitString "_" (nixpkgs.lib.removeSuffix ".nix" file);
+        name = builtins.head splited;
+        system = if builtins.length splited > 1 then nixpkgs.lib.concatStringsSep "_" (builtins.tail splited) else "x86_64-linux";
+      in {
+        inherit name;
         value = home-manager.lib.homeManagerConfiguration rec {
-          pkgs = import nixpkgs { system = "x86_64-linux"; };
+          pkgs = import nixpkgs { inherit system; };
           extraSpecialArgs = {
             inherit inputs;
             fetch = pkgs.callPackage ./fetch/_sources/generated.nix {};
           };
           modules = [
-            ./profiles/${name}
+            ./profiles/${file}
             self.homeModules.secrets
             sops-nix.homeManagerModules.sops
             nix-index-database.homeModules.default
