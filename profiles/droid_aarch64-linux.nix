@@ -29,4 +29,6 @@ in {
       )} ${lib.concatStringsSep " " config.systemd.user.services.sops-nix.Service.ExecStart}
     ''
   );
+
+  programs.atuin.daemon.enable = false;
 }

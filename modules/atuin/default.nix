@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }: {
   programs.atuin = {
     enable = true;
-    daemon.enable = true;
+    daemon.enable = lib.mkDefault true;
     settings = {
       sync_address = "https://atuin.ani.llc";
       enter_accept = true;
