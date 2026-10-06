@@ -8,6 +8,9 @@
       fi
     '';
   };
+  home.packages = with pkgs; [ dtach ];
+  # fix dtach `ctrl-\` and ssh `enter ~.`
+  home.sessionVariables.fish_features = "no-query-term";
   programs.fish = {
     enable = true;
     plugins = with pkgs.fishPlugins; [ plugin-git done puffer z ]
@@ -18,6 +21,11 @@
       suser = "systemctl --user";
       v = "nvim";
     };
+    functions.a = ''
+      set -l name main
+      set -q argv[1]; and set name $argv[1]
+      dtach -A /tmp/dtach-$name.sock -e '^a' fish
+    '';
     interactiveShellInit = ''
       set fish_greeting
       fish_vi_key_bindings

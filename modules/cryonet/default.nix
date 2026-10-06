@@ -43,7 +43,7 @@ in {
       RestartSec = 5;
       ExecStart = pkgs.writeShellScript "cryonet-netns" ''
         set -euo pipefail
-        export PATH=$PATH:${lib.makeBinPath (with pkgs; [ coreutils util-linux gawk slirp4netns iproute2 ])}
+        export PATH=$PATH:${lib.makeBinPath (with pkgs; [ coreutils util-linux gawk gnugrep slirp4netns iproute2 ])}
 
         subuid=$(awk -F: -v u="$(id -un)" '$1 == u { print $2; exit }' /etc/subuid)
         subgid=$(awk -F: -v u="$(id -un)" '$1 == u { print $2; exit }' /etc/subgid)
