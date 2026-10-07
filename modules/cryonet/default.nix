@@ -111,7 +111,7 @@ in {
       RemainAfterExit = true;
       ExecStart = "${cryonet-ns-enter}/bin/cryonet-ns-enter ${pkgs.writeShellScript "cryonet-address" ''
         set -euo pipefail
-        export PATH=$PATH:${lib.makeBinPath (with pkgs; [ coreutils iproute2 ])}
+        export PATH=$PATH:${lib.makeBinPath (with pkgs; [ coreutils iproute2 nftables ])}
 
         while ! ip link show cn0; do
           sleep 0.5
@@ -119,6 +119,21 @@ in {
 
         ip link set cn0 up
         ip address replace 10.11.0.252/24 dev cn0
+
+        echo 1 > /proc/sys/net/ipv4/ip_forward
+        nft delete table ip cryonet-nat 2>/dev/null || true
+        nft -f - <<EOF
+        table ip cryonet-nat {
+          chain prerouting {
+            type nat hook prerouting priority dstnat; policy accept;
+            iifname "cn0" ip daddr 10.11.0.252 tcp dport 22 dnat to 10.0.2.2:22
+          }
+          chain postrouting {
+            type nat hook postrouting priority srcnat; policy accept;
+            iifname "cn0" oifname "tap0" ip saddr 10.11.0.0/24 masquerade
+          }
+        }
+        EOF
       ''}";
     };
   };
