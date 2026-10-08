@@ -1,21 +1,21 @@
 { config, pkgs, lib, inputs, ... }:
 let
   cryonet = inputs.cryonet.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  cryonet-ns-enter = pkgs.writeShellApplication {
-    name = "cryonet-ns-enter";
+  cryonet-nsenter = pkgs.writeShellApplication {
+    name = "cryonet-nsenter";
     runtimeInputs = with pkgs; [ coreutils util-linux ];
     text = ''
       set -euo pipefail
 
       pidfile=''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/cryonet-ns.pid
       if [ ! -r "$pidfile" ]; then
-        echo "cryonet-ns-enter: $pidfile not found"
+        echo "cryonet-nsenter: $pidfile not found"
         exit 1
       fi
 
       pid=$(cat "$pidfile")
       if [ ! -e "/proc/$pid/ns/net" ]; then
-        echo "cryonet-ns-enter: pid $pid is gone"
+        echo "cryonet-nsenter: pid $pid is gone"
         exit 1
       fi
 
@@ -32,7 +32,7 @@ let
     '';
   };
 in {
-  home.packages = [ cryonet cryonet-ns-enter ];
+  home.packages = [ cryonet cryonet-nsenter ];
   sops.secrets.cryonet-env.sopsFile = ./secrets.yaml;
 
   systemd.user.services.cryonet-netns = {
@@ -95,7 +95,7 @@ in {
         "CANDIDATE_FILTER_PREFIXES=10.0.0.0/8"
       ];
       EnvironmentFile = config.sops.secrets.cryonet-env.path;
-      ExecStart = "${cryonet-ns-enter}/bin/cryonet-ns-enter ${cryonet}/bin/cryonet 252";
+      ExecStart = "${cryonet-nsenter}/bin/cryonet-nsenter ${cryonet}/bin/cryonet 252";
       RuntimeDirectory = "cryonet";
     };
   };
@@ -109,7 +109,7 @@ in {
     Service = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${cryonet-ns-enter}/bin/cryonet-ns-enter ${pkgs.writeShellScript "cryonet-address" ''
+      ExecStart = "${cryonet-nsenter}/bin/cryonet-nsenter ${pkgs.writeShellScript "cryonet-address" ''
         set -euo pipefail
         export PATH=$PATH:${lib.makeBinPath (with pkgs; [ coreutils iproute2 nftables ])}
 
