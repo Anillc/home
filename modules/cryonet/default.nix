@@ -1,6 +1,11 @@
 { config, pkgs, lib, inputs, ... }:
 let
+  cfg = config.cryonet;
+
   cryonet = inputs.cryonet.packages.${pkgs.stdenv.hostPlatform.system}.default;
+
+  ip = "10.11.0.${toString cfg.id}";
+
   cryonet-nsenter = pkgs.writeShellApplication {
     name = "cryonet-nsenter";
     runtimeInputs = with pkgs; [ coreutils util-linux ];
@@ -32,109 +37,116 @@ let
     '';
   };
 in {
-  home.packages = [ cryonet cryonet-nsenter ];
-  sops.secrets.cryonet-env.sopsFile = ./secrets.yaml;
-
-  systemd.user.services.cryonet-netns = {
-    Install.WantedBy = [ "default.target" ];
-    Service = {
-      Type = "simple";
-      Restart = "always";
-      RestartSec = 5;
-      ExecStart = pkgs.writeShellScript "cryonet-netns" ''
-        set -euo pipefail
-        export PATH=$PATH:${lib.makeBinPath (with pkgs; [ coreutils util-linux gawk gnugrep slirp4netns iproute2 ])}
-
-        subuid=$(awk -F: -v u="$(id -un)" '$1 == u { print $2; exit }' /etc/subuid)
-        subgid=$(awk -F: -v u="$(id -un)" '$1 == u { print $2; exit }' /etc/subgid)
-
-        if [ -z "$subuid" ] || [ -z "$subgid" ]; then
-          echo "cryonet-netns: no subuid/subgid"
-          exit 1
-        fi
-
-        pidfile=''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/cryonet-ns.pid
-
-        unshare -cn \
-          --map-users="0:$subuid:1" \
-          --map-groups="0:$subgid:1" \
-          -S 0 -G 0 \
-          -- sleep infinity &
-        ns=$!
-        while [ "$(readlink /proc/$ns/ns/net)" == "$(readlink /proc/self/ns/net)" ]; do
-          sleep 0.5
-        done
-
-        slirp4netns --configure --mtu=65520 "$ns" tap0 &
-        slirp=$!
-        while ! nsenter -t "$ns" -U -n -S "$(id -u)" -G "$(id -g)" -- ip route | grep -q '^default'; do
-          sleep 0.5
-        done
-
-        trap 'rm -f "$pidfile"; kill $ns $slirp || true' INT TERM EXIT
-        echo "$ns" > "$pidfile"
-
-        wait -n "$ns" "$slirp"
-      '';
-    };
+  options.cryonet.id = lib.mkOption {
+    type = with lib.types; int;
+    description = "node id";
   };
 
-  systemd.user.services.cryonet = {
-    Unit = {
-      BindsTo = [ "cryonet-netns.service" ];
-      After = [ "cryonet-netns.service" "sops-nix.service" ];
+  config = {
+    home.packages = [ cryonet cryonet-nsenter ];
+    sops.secrets.cryonet-env.sopsFile = ./secrets.yaml;
+
+    systemd.user.services.cryonet-netns = {
+      Install.WantedBy = [ "default.target" ];
+      Service = {
+        Type = "simple";
+        Restart = "always";
+        RestartSec = 5;
+        ExecStart = pkgs.writeShellScript "cryonet-netns" ''
+          set -euo pipefail
+          export PATH=$PATH:${lib.makeBinPath (with pkgs; [ coreutils util-linux gawk gnugrep slirp4netns iproute2 ])}
+
+          subuid=$(awk -F: -v u="$(id -un)" '$1 == u { print $2; exit }' /etc/subuid)
+          subgid=$(awk -F: -v u="$(id -un)" '$1 == u { print $2; exit }' /etc/subgid)
+
+          if [ -z "$subuid" ] || [ -z "$subgid" ]; then
+            echo "cryonet-netns: no subuid/subgid"
+            exit 1
+          fi
+
+          pidfile=''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/cryonet-ns.pid
+
+          unshare -cn \
+            --map-users="0:$subuid:1" \
+            --map-groups="0:$subgid:1" \
+            -S 0 -G 0 \
+            -- sleep infinity &
+          ns=$!
+          while [ "$(readlink /proc/$ns/ns/net)" == "$(readlink /proc/self/ns/net)" ]; do
+            sleep 0.5
+          done
+
+          slirp4netns --configure --mtu=65520 "$ns" tap0 &
+          slirp=$!
+          while ! nsenter -t "$ns" -U -n -S "$(id -u)" -G "$(id -g)" -- ip route | grep -q '^default'; do
+            sleep 0.5
+          done
+
+          trap 'rm -f "$pidfile"; kill $ns $slirp || true' INT TERM EXIT
+          echo "$ns" > "$pidfile"
+
+          wait -n "$ns" "$slirp"
+        '';
+      };
     };
-    Install.WantedBy = [ "default.target" ];
-    Service = {
-      Type = "simple";
-      Restart = "always";
-      RestartSec = 5;
-      Environment = [
-        "TAP_MODE=true"
-        "SERVERS=wss://cola.s.kagari.org:16809,wss://hk.s.kagari.org:16809"
-        "CANDIDATE_FILTER_PREFIXES=10.0.0.0/8"
-      ];
-      EnvironmentFile = config.sops.secrets.cryonet-env.path;
-      ExecStart = "${cryonet-nsenter}/bin/cryonet-nsenter ${cryonet}/bin/cryonet 252";
-      RuntimeDirectory = "cryonet";
+
+    systemd.user.services.cryonet = {
+      Unit = {
+        BindsTo = [ "cryonet-netns.service" ];
+        After = [ "cryonet-netns.service" "sops-nix.service" ];
+      };
+      Install.WantedBy = [ "default.target" ];
+      Service = {
+        Type = "simple";
+        Restart = "always";
+        RestartSec = 5;
+        Environment = [
+          "TAP_MODE=true"
+          "SERVERS=wss://cola.s.kagari.org:16809,wss://hk.s.kagari.org:16809"
+          "CANDIDATE_FILTER_PREFIXES=10.0.0.0/8"
+        ];
+        EnvironmentFile = config.sops.secrets.cryonet-env.path;
+        ExecStart = "${cryonet-nsenter}/bin/cryonet-nsenter ${cryonet}/bin/cryonet ${toString cfg.id}";
+        RuntimeDirectory = "cryonet";
+      };
     };
-  };
 
-  systemd.user.services.cryonet-address = {
-    Unit = {
-      PartOf = [ "cryonet.service" ];
-      After = [ "cryonet.service" ];
-    };
-    Install.WantedBy = [ "default.target" ];
-    Service = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "${cryonet-nsenter}/bin/cryonet-nsenter ${pkgs.writeShellScript "cryonet-address" ''
-        set -euo pipefail
-        export PATH=$PATH:${lib.makeBinPath (with pkgs; [ coreutils iproute2 nftables ])}
+    systemd.user.services.cryonet-address = {
+      Unit = {
+        PartOf = [ "cryonet.service" ];
+        After = [ "cryonet.service" ];
+      };
+      Install.WantedBy = [ "default.target" ];
+      Service = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${cryonet-nsenter}/bin/cryonet-nsenter ${pkgs.writeShellScript "cryonet-address" ''
+          set -euo pipefail
+          export PATH=$PATH:${lib.makeBinPath (with pkgs; [ coreutils iproute2 nftables ])}
 
-        while ! ip link show cn0; do
-          sleep 0.5
-        done
+          while ! ip link show cn0; do
+            sleep 0.5
+          done
 
-        ip link set cn0 up
-        ip address replace 10.11.0.252/24 dev cn0
+          ip link set cn0 up
+          ip address replace ${ip}/24 dev cn0
 
-        echo 1 > /proc/sys/net/ipv4/ip_forward
-        nft delete table ip cryonet-nat 2>/dev/null || true
-        nft -f - <<EOF
-        table ip cryonet-nat {
-          chain prerouting {
-            type nat hook prerouting priority dstnat; policy accept;
-            iifname "cn0" ip daddr 10.11.0.252 tcp dport 22 dnat to 10.0.2.2:22
+          echo 1 > /proc/sys/net/ipv4/ip_forward
+          nft delete table ip cryonet-nat 2>/dev/null || true
+          nft -f - <<EOF
+          table ip cryonet-nat {
+            chain prerouting {
+              type nat hook prerouting priority dstnat; policy accept;
+              iifname "cn0" ip daddr ${ip} tcp dport 22 dnat to 10.0.2.2:22
+            }
+            chain postrouting {
+              type nat hook postrouting priority srcnat; policy accept;
+              iifname "cn0" oifname "tap0" ip saddr 10.11.0.0/24 masquerade
+            }
           }
-          chain postrouting {
-            type nat hook postrouting priority srcnat; policy accept;
-            iifname "cn0" oifname "tap0" ip saddr 10.11.0.0/24 masquerade
-          }
-        }
-        EOF
-      ''}";
+          EOF
+        ''}";
+      };
     };
   };
 }
