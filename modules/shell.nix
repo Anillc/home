@@ -24,7 +24,9 @@
     functions.a = ''
       set -l name main
       set -q argv[1]; and set name $argv[1]
-      dtach -A /tmp/dtach-$name.sock -e '^a' fish
+      set -l cmd fish
+      test (count $argv) -gt 1; and set cmd $argv[2..-1]
+      dtach -A /tmp/dtach-$name.sock -e '^a' $cmd
     '';
     interactiveShellInit = ''
       set fish_greeting
