@@ -6,6 +6,11 @@ let
 
   ip = "10.11.0.${toString cfg.id}";
 
+  nix-store-uid-map = pkgs.runCommandCC "cryonet-nix-store-uid-map" { } ''
+    mkdir -p $out/lib
+    $CC -shared -fPIC -O2 -Wall -Wextra -o $out/lib/nix-store-uid-map.so ${./nix-store-uid-map.c}
+  '';
+
   cryonet-nsenter = pkgs.writeShellApplication {
     name = "cryonet-nsenter";
     runtimeInputs = with pkgs; [ coreutils util-linux ];
@@ -33,6 +38,7 @@ let
       fi
       [ $# -gt 0 ] || set -- "$SHELL"
 
+      export LD_PRELOAD=${nix-store-uid-map}/lib/nix-store-uid-map.so''${LD_PRELOAD:+:$LD_PRELOAD}
       exec nsenter -U -n -t "$pid" -S "$uid" -G "$gid" --keep-caps -- "$@"
     '';
   };
