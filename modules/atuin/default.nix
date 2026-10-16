@@ -5,6 +5,22 @@
     settings = {
       sync_address = "https://atuin.ani.llc";
       enter_accept = true;
+      filter_mode = "session-preload";
+      keymap_mode = "auto";
+      keymap = lib.genAttrs [ "emacs" "vim-insert" "vim-normal" ] (_: {
+        left = [
+          { when = "cursor-at-start"; action = "return-selection"; }
+          { action = "cursor-left"; }
+        ];
+        ctrl-left = [
+          { when = "cursor-at-start"; action = "return-selection"; }
+          { action = "cursor-word-left"; }
+        ];
+        ctrl-right = [
+          { when = "cursor-at-end"; action = "return-selection"; }
+          { action = "cursor-word-right"; }
+        ];
+      });
     };
   };
   sops.secrets.atuin-login.sopsFile = ./secrets.yaml;
