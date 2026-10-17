@@ -11,6 +11,7 @@ let
     ../modules/gpg-agent.nix
     ../modules/ssh.nix
     ../modules/codex.nix
+    ../modules/dsh.nix
     ../modules/ghostty.nix
     ../modules/vivaldi.nix
     ../modules/fcitx5.nix
