@@ -13,8 +13,20 @@
     };
   };
 
-  programs.fish.shellAliases = {
-    dso = "curl http://127.0.0.1:3080/api/open";
-    dsl = ''curl http://127.0.0.1:3080/api/launch -d "$PWD"'';
-  };
+  home.packages = [
+    (pkgs.writeShellApplication {
+      name = "dso";
+      runtimeInputs = [ pkgs.curl ];
+      text = ''
+        curl http://127.0.0.1:3080/api/open
+      '';
+    })
+    (pkgs.writeShellApplication {
+      name = "dsl";
+      runtimeInputs = [ pkgs.curl ];
+      text = ''
+        curl http://127.0.0.1:3080/api/launch -d "$PWD"
+      '';
+    })
+  ];
 }
