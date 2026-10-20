@@ -34,6 +34,8 @@
       bind -M insert -m default jj backward-char force-repaint
       for mode in (bind --list-modes)
         bind -M $mode ctrl-c cancel-commandline
+        bind -M $mode ctrl-right forward-word
+        bind -M $mode ctrl-left backward-word
       end
     '';
   };
