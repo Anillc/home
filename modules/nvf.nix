@@ -103,15 +103,7 @@
       # nvim-session-manager
       session.nvim-session-manager = {
         enable = true;
-        setupOpts.autoload_mode = lib.generators.mkLuaInline ''
-          (function()
-            if vim.fn.getcwd() == vim.env.HOME then
-              return sm.AutoloadMode.LastSession
-            else
-              return { sm.AutoloadMode.GitSession, sm.AutoloadMode.CurrentDir }
-            end
-          end)()
-        '';
+        setupOpts.autoload_mode = lib.generators.mkLuaInline "{ sm.AutoloadMode.GitSession, sm.AutoloadMode.CurrentDir }";
       };
 
       # gitsigns
