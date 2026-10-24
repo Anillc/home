@@ -2,6 +2,7 @@ let
   modules = [
     ../modules/core.nix
     ../modules/nix.nix
+    ../modules/nix-netrc
     ../modules/gpg.nix
     ../modules/git.nix
     ../modules/gh.nix
