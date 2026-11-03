@@ -3,9 +3,10 @@
   inputs.nix-index-database.url = "github:nix-community/nix-index-database";
   inputs.nvf.url = "github:NotAShelf/nvf";
   inputs.cryonet.url = "github:kagari-org/cryonet";
+  inputs.nodejs-mode.url = "github:Anillc/nodejs-mode.fish";
   outputs = inputs@{
     self, nixpkgs, flake-parts, sops-nix, home-manager, deploy, nix-index-database, nvf, ...
-  }: flake-parts.lib.mkFlake { inherit inputs; } {
+  }: flake-parts.lib.mkFlake { inherit inputs; } ({ withSystem, ... }: {
     imports = [ ./sops.nix ];
     debug = true;
     systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
@@ -29,10 +30,10 @@
         system = if builtins.length splited > 1 then nixpkgs.lib.concatStringsSep "_" (builtins.tail splited) else "x86_64-linux";
       in {
         inherit name;
-        value = home-manager.lib.homeManagerConfiguration rec {
-          pkgs = import nixpkgs { inherit system; };
+        value = withSystem system ({ pkgs, inputs', ... }: home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
           extraSpecialArgs = {
-            inherit inputs;
+            inherit inputs inputs';
             fetch = pkgs.callPackage ./fetch/_sources/generated.nix {};
           };
           modules = [
@@ -42,7 +43,7 @@
             nix-index-database.homeModules.default
             nvf.homeManagerModules.default
           ];
-        };
+        });
       })
       |> builtins.listToAttrs;
     flake.deploy.nodes = self.homeConfigurations
@@ -53,5 +54,5 @@
         profiles.home-manager = { inherit path; };
         hostname = ""; # we pass this via CLI
       });
-  };
+  });
 }

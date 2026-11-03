@@ -1,4 +1,4 @@
-{ config, pkgs, ... }: {
+{ config, pkgs, inputs', ... }: {
   programs.bash = {
     enable = true;
     bashrcExtra = ''
@@ -8,13 +8,14 @@
       fi
     '';
   };
-  home.packages = with pkgs; [ dtach ];
+  home.packages = with pkgs; with fishPlugins; [
+    dtach libnotify plugin-git done puffer z
+    inputs'.nodejs-mode.packages.default
+  ];
   # fix dtach `ctrl-\` and ssh `enter ~.`
   home.sessionVariables.fish_features = "no-query-term";
   programs.fish = {
     enable = true;
-    plugins = with pkgs.fishPlugins; [ plugin-git done puffer z ]
-      |> map (x: { name = x.pname; inherit (x) src; });
     shellAliases = {
       pb = "curl --data-binary @- https://pb.nichi.co/";
       s = "systemctl";
@@ -30,6 +31,7 @@
     '';
     interactiveShellInit = ''
       set fish_greeting
+      __git.init
       fish_vi_key_bindings
       bind -M insert -m default jj backward-char force-repaint
       for mode in (bind --list-modes)
