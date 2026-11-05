@@ -7,7 +7,7 @@ let
     ../modules/git.nix
     ../modules/gh.nix
     ../modules/shell.nix
-    ../modules/nvf.nix
+    ../modules/nvim
     ../modules/atuin
     ../modules/ssh.nix
     ../modules/codex.nix

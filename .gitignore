@@ -1,3 +1,5 @@
 /.direnv
 /result
 /.sops.yaml
+
+modules/nvim/nvim.log

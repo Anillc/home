@@ -20,7 +20,6 @@
       pb = "curl --data-binary @- https://pb.nichi.co/";
       s = "systemctl";
       suser = "systemctl --user";
-      v = "nvim";
     };
     functions.a = ''
       set -l name main

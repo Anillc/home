@@ -5,7 +5,7 @@ let
     ../modules/gpg.nix
     ../modules/git.nix
     ../modules/shell.nix
-    ../modules/nvf.nix
+    ../modules/nvim
     ../modules/atuin
   ];
 in {

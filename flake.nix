@@ -1,11 +1,11 @@
 {
   inputs.deploy.url = "github:serokell/deploy-rs";
   inputs.nix-index-database.url = "github:nix-community/nix-index-database";
-  inputs.nvf.url = "github:NotAShelf/nvf";
+  inputs.mnw.url = "github:Gerg-L/mnw";
   inputs.cryonet.url = "github:kagari-org/cryonet";
   inputs.sakanajs.url = "github:Anillc/sakanajs";
   outputs = inputs@{
-    self, nixpkgs, flake-parts, sops-nix, home-manager, deploy, nix-index-database, nvf, ...
+    self, nixpkgs, flake-parts, sops-nix, home-manager, deploy, nix-index-database, mnw, ...
   }: flake-parts.lib.mkFlake { inherit inputs; } ({ withSystem, ... }: {
     imports = [ ./sops.nix ];
     debug = true;
@@ -41,7 +41,7 @@
             self.homeModules.secrets
             sops-nix.homeManagerModules.sops
             nix-index-database.homeModules.default
-            nvf.homeManagerModules.default
+            mnw.homeManagerModules.mnw
           ];
         });
       })
