@@ -3,7 +3,7 @@
   inputs.nix-index-database.url = "github:nix-community/nix-index-database";
   inputs.nvf.url = "github:NotAShelf/nvf";
   inputs.cryonet.url = "github:kagari-org/cryonet";
-  inputs.nodejs-mode.url = "github:Anillc/nodejs-mode.fish";
+  inputs.sakanajs.url = "github:Anillc/sakanajs";
   outputs = inputs@{
     self, nixpkgs, flake-parts, sops-nix, home-manager, deploy, nix-index-database, nvf, ...
   }: flake-parts.lib.mkFlake { inherit inputs; } ({ withSystem, ... }: {

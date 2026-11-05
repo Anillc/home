@@ -10,7 +10,7 @@
   };
   home.packages = with pkgs; with fishPlugins; [
     dtach libnotify plugin-git done puffer z
-    inputs'.nodejs-mode.packages.default
+    inputs'.sakanajs.packages.default
   ];
   # fix dtach `ctrl-\` and ssh `enter ~.`
   home.sessionVariables.fish_features = "no-query-term";
