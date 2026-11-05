@@ -15,6 +15,7 @@
           rimeDataPkgs = [ rime-flypy ];
         })
       ];
+      settings.addons.rime.globalSection.SwitchInputMethodBehavior = "Commit raw input";
       settings.inputMethod = {
         "GroupOrder"."0" = "Default";
         "Groups/0" = {
@@ -25,6 +26,17 @@
         "Groups/0/Items/0".Name = "keyboard-us";
         "Groups/0/Items/1".Name = "rime";
       };
+    };
+  };
+
+  xdg.dataFile."fcitx5/rime/default.custom.yaml".source = (pkgs.formats.yaml { }).generate "default.custom.yaml" {
+    patch = {
+      "schema_list/+" = [
+        { schema = "flypy"; }
+        { schema = "flypydz"; }
+      ];
+      "ascii_composer/switch_key/Shift_L" = "commit_code";
+      "ascii_composer/switch_key/Shift_R" = "commit_code";
     };
   };
 }
