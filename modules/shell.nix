@@ -9,7 +9,7 @@
     '';
   };
   home.packages = with pkgs; with fishPlugins; [
-    dtach libnotify plugin-git done puffer z
+    dtach plugin-git puffer z
     inputs'.sakanajs.packages.default
   ];
   # fix dtach `ctrl-\` and ssh `enter ~.`
