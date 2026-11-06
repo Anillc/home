@@ -5,6 +5,8 @@ local opt = vim.opt
 
 opt.shiftwidth = 2
 opt.tabstop = 2
+opt.number = true
+opt.relativenumber = true
 opt.cursorline = true
 opt.wrap = false
 opt.winborder = "single"
