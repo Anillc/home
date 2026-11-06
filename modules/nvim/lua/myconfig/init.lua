@@ -5,10 +5,14 @@ local opt = vim.opt
 
 opt.shiftwidth = 2
 opt.tabstop = 2
+opt.expandtab = true
 opt.number = true
 opt.relativenumber = true
 opt.cursorline = true
 opt.wrap = false
+opt.hidden = true
+opt.swapfile = false
+opt.writebackup = false
 opt.winborder = "single"
 opt.list = true
 opt.listchars = { space = "·", tab = " →" }
