@@ -19,6 +19,7 @@ map("i", "<C-k>", "<Up>")
 map("i", "<C-j>", "<Down>")
 map("i", "<C-h>", "<Left>")
 map("i", "<C-l>", "<Right>")
+map("i", "<Home>", "<Esc>^i")
 
 map("n", "<C-n>", "<cmd>BufferLineCycleNext<CR>")
 map("n", "<C-p>", "<cmd>BufferLineCyclePrev<CR>")
