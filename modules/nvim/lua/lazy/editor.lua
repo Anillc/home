@@ -8,6 +8,16 @@ return {
     after = function()
       require("neo-tree").setup({
         close_if_last_window = true,
+        window = {
+          mappings = {
+            -- neo-tree maps s to open_vsplit by default, which shadows leap
+            ["s"] = function()
+              require("lz.n").trigger_load("leap.nvim")
+              require("leap").leap({ target_windows = { vim.api.nvim_get_current_win() } })
+            end,
+            ["<C-v>"] = "open_vsplit",
+          },
+        },
       })
     end,
   },
