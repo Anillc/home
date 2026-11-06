@@ -19,15 +19,34 @@ return {
     },
   },
   {
-    "multicursors.nvim",
+    "multiple-cursors.nvim",
     keys = {
-      { "<leader>mcu", "<cmd>MCunderCursor<CR>", mode = { "n", "v" }, desc = "Multicursor under cursor" },
-      { "<leader>mcp", "<cmd>MCpattern<CR>", mode = { "n", "v" }, desc = "Multicursor pattern" },
-      { "<leader>mcv", "<cmd>MCvisual<CR>", mode = { "n", "v" }, desc = "Multicursor visual" },
-      { "<leader>mcb", "<cmd>MCvisualPattern<CR>", mode = { "n", "v" }, desc = "Multicursor visual pattern" },
+      { "<C-S-j>", "<cmd>MultipleCursorsAddDown<CR>", mode = { "n", "i", "x" } },
+      { "<C-S-k>", "<cmd>MultipleCursorsAddUp<CR>", mode = { "n", "i", "x" } },
+      { "<C-S-n>", "<cmd>MultipleCursorsAddJumpNextMatch<CR>", mode = { "n", "i", "x" } },
+      { "<C-S-l>", "<cmd>MultipleCursorsLock<CR>", mode = { "n", "i", "x" } },
+      { "<C-S-Return>", "<cmd>MultipleCursorsAddDelete<CR>", mode = { "n", "i", "x" } },
+      { "<leader>mca", "<cmd>MultipleCursorsAddMatches<CR>", mode = { "n", "x" } },
+      { "<leader>mcA", "<cmd>MultipleCursorsAddMatchesV<CR>", mode = { "n", "x" } },
+      {
+        "I",
+        function()
+          vim.cmd("MultipleCursorsAddVisualArea")
+          vim.api.nvim_feedkeys("i", "n", false)
+        end,
+        mode = "x",
+      },
     },
     after = function()
-      require("multicursors").setup({})
+      require("multiple-cursors").setup({
+        pre_hook = function()
+          require("lz.n").trigger_load("nvim-autopairs")
+          require("nvim-autopairs").disable()
+        end,
+        post_hook = function()
+          require("nvim-autopairs").enable()
+        end,
+      })
     end,
   },
   {

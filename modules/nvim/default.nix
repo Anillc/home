@@ -72,7 +72,7 @@
 
         neo-tree-nvim
         leap-nvim
-        multicursors-nvim
+        multiple-cursors-nvim
         vim-sandwich
         comment-nvim
         nvim-autopairs
