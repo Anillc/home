@@ -78,7 +78,7 @@ in {
             -S 0 -G 0 \
             -- sleep infinity &
           ns=$!
-          while [ "$(readlink /proc/$ns/ns/net)" == "$(readlink /proc/self/ns/net)" ]; do
+          while ! nsenter -t "$ns" -U -n -S "$(id -u)" -G "$(id -g)" -- true 2>/dev/null; do
             sleep 0.5
           done
 
@@ -99,6 +99,7 @@ in {
     systemd.user.services.cryonet = {
       Unit = {
         BindsTo = [ "cryonet-netns.service" ];
+        PartOf = [ "cryonet-netns.service" ];
         After = [ "cryonet-netns.service" "sops-nix.service" ];
       };
       Install.WantedBy = [ "default.target" ];
@@ -126,6 +127,8 @@ in {
       Service = {
         Type = "oneshot";
         RemainAfterExit = true;
+        Restart = "on-failure";
+        RestartSec = 5;
         ExecStart = "${cryonet-nsenter}/bin/cryonet-nsenter ${pkgs.writeShellScript "cryonet-address" ''
           set -euo pipefail
           export PATH=$PATH:${lib.makeBinPath (with pkgs; [ coreutils iproute2 nftables ])}
