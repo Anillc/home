@@ -5,6 +5,7 @@
     ./hyprlock.nix
     ./hypridle.nix
     ./hypr-rdp.nix
+    ./satty.nix
   ];
 
   programs.bash.profileExtra = ''
@@ -97,6 +98,13 @@
       hl.env("XCURSOR_SIZE", "24")
 
       hl.window_rule({
+        name = "float-satty";
+        match = { class = "com.gabm.satty" };
+        float = true;
+        center = true;
+      })
+
+      hl.window_rule({
         name = "float-dialogs";
         match = { class = "^(xdg-desktop-portal-.*|pavucontrol|blueman-manager|nm-connection-editor)$" };
         float = true;
@@ -114,6 +122,9 @@
       hl.bind(mod .. " + F", hl.dsp.layout("zoom"))
       hl.bind(mod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
       hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("hyprlock"))
+
+      hl.bind("Print", hl.dsp.exec_cmd([[grim -g "$(slurp -c '#ff0000ff')" -t ppm - | satty -f -]]))
+      hl.bind("SHIFT + Print", hl.dsp.exec_cmd([[grim -t ppm - | satty -f -]]))
 
       hl.bind(mod .. " + V", hl.dsp.window.float({ action = "toggle" }))
       hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
