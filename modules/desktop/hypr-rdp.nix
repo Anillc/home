@@ -2,6 +2,8 @@
   xdg.configFile."hypr-rdp/config.toml".text = ''
     bind = "0.0.0.0:3389"
     auth_mode = "pam"
+    fps = 60
+    bitrate = 20000000
   '';
 
   systemd.user.services.hypr-rdp = {
