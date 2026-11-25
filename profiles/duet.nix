@@ -14,6 +14,7 @@ let
     ../modules/codex.nix
     ../modules/dsh.nix
     ../modules/ghostty.nix
+    ../modules/hyprland
     ../modules/vivaldi.nix
     ../modules/fcitx5.nix
     ../modules/multica
