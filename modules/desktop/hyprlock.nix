@@ -25,8 +25,8 @@
           inner_color = "rgba(20, 26, 33, 0.85)";
           font_color = "rgb(232, 244, 245)";
           font_family = "JetBrainsMono Nerd Font";
-          placeholder_text = "<span foreground='#6b7a8c'>Password</span>";
-          fail_text = "<span foreground='#d08c8c'>Wrong password</span>";
+          placeholder_text = "<span foreground='##6b7a8c'>Password</span>";
+          fail_text = "<span foreground='##d08c8c'>Wrong password</span>";
           dots_size = 0.2;
           dots_spacing = 0.25;
           position = "0, -80";
