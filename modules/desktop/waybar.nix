@@ -11,7 +11,7 @@
 
       modules-left = [ "hyprland/workspaces" "hyprland/window" ];
       modules-center = [ "clock" ];
-      modules-right = [ "pulseaudio" "network" "battery" "tray" ];
+      modules-right = [ "backlight" "pulseaudio" "network" "battery" "tray" ];
 
       "hyprland/workspaces" = {
         format = "{id}";
@@ -34,6 +34,14 @@
             today = "<span color='#cba6f7'><b>{}</b></span>";
           };
         };
+      };
+
+      backlight = {
+        device = "intel_backlight";
+        format = "{icon} {percent}%";
+        format-icons = [ "󰃞" "󰃟" "󰃠" ];
+        scroll-step = 5.0;
+        min-brightness = 1.0;
       };
 
       pulseaudio = {
@@ -141,6 +149,11 @@
 
       #clock {
         padding: 0 12px;
+        color: @yellow;
+      }
+
+      #backlight {
+        padding: 0 10px;
         color: @yellow;
       }
 

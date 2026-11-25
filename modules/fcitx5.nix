@@ -15,7 +15,17 @@
           rimeDataPkgs = [ rime-flypy ];
         })
       ];
-      settings.addons.rime.globalSection.SwitchInputMethodBehavior = "Commit raw input";
+      settings.addons = {
+        classicui.globalSection = {
+          Theme = "catppuccin-mocha-sapphire";
+          Font = "JetBrainsMono Nerd Font 11";
+          MenuFont = "JetBrainsMono Nerd Font 11";
+          TrayFont = "JetBrainsMono Nerd Font 11";
+          PerScreenDPI = "True";
+          "Vertical Candidate List" = "False";
+        };
+        rime.globalSection.SwitchInputMethodBehavior = "Commit raw input";
+      };
       settings.inputMethod = {
         "GroupOrder"."0" = "Default";
         "Groups/0" = {
@@ -28,6 +38,8 @@
       };
     };
   };
+
+  home.packages = [ (pkgs.catppuccin-fcitx5.override { withRoundedCorners = true; }) ];
 
   xdg.dataFile."fcitx5/rime/default.custom.yaml".source = (pkgs.formats.yaml { }).generate "default.custom.yaml" {
     patch = {
