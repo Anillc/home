@@ -5,15 +5,15 @@
       general = {
         lock_cmd = "pidof hyprlock || hyprlock";
         before_sleep_cmd = "pidof hyprlock || hyprlock";
-        after_sleep_cmd = "hyprctl dispatch dpms on";
+        after_sleep_cmd = "hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })'";
       };
       listener = [
         {
-          timeout = 300;
+          timeout = 120;
           on-timeout = "${pkgs.writeShellScript "hypridle-locked-suspend" ''
             pidof hyprlock >/dev/null || exit 0
 
-            hyprctl dispatch dpms off || true
+            hyprctl dispatch 'hl.dsp.dpms({ action = "off" })' || true
 
             while pidof hyprlock >/dev/null; do
               on_ac=0
@@ -31,7 +31,7 @@
               sleep 30
             done
           ''}";
-          on-resume = "pkill -f hypridle-locked-suspend >/dev/null 2>&1 || true; hyprctl dispatch dpms on";
+          on-resume = "pkill -f hypridle-locked-suspend >/dev/null 2>&1 || true; hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })'";
         }
       ];
     };
