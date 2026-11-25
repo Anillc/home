@@ -1,6 +1,7 @@
-{ ... }: {
+{ pkgs, ... }: {
   programs.waybar = {
     enable = true;
+    systemd.enable = true;
 
     settings.mainBar = {
       layer = "top";
@@ -9,9 +10,21 @@
       margin = "6 10 0 10";
       spacing = 6;
 
-      modules-left = [ "hyprland/workspaces" "hyprland/window" ];
+      modules-left = [ "custom/focus" "hyprland/workspaces" "custom/special" "hyprland/window" ];
       modules-center = [ "clock" ];
       modules-right = [ "backlight" "pulseaudio" "network" "battery" "tray" ];
+
+      "custom/focus" = {
+        exec = "hyprctl -j monitors 2>/dev/null | ${pkgs.jq}/bin/jq -r --arg out \"$WAYBAR_OUTPUT_NAME\" 'first(.[] | select(.name == $out) | (if .focused then \"●\" else \"○\" end)) // \"○\"' 2>/dev/null";
+        signal = 8;
+        tooltip = false;
+      };
+
+      "custom/special" = {
+        exec = "hyprctl -j monitors 2>/dev/null | ${pkgs.jq}/bin/jq -r 'any(.[]; ((.specialWorkspace.name // \"\") != \"\")) | if . then \"S\" else \"\" end' 2>/dev/null";
+        signal = 9;
+        tooltip = false;
+      };
 
       "hyprland/workspaces" = {
         format = "{id}";
@@ -106,9 +119,22 @@
         padding: 0 4px;
       }
 
-      #workspaces button {
+      #custom-focus {
+        padding: 0 0 0 8px;
+        margin-right: -6px;
+        color: @accent;
+      }
+
+      #workspaces button,
+      #custom-special {
+        min-width: 0;
+        min-height: 0;
         padding: 0 9px;
         margin: 5px 2px;
+        border-radius: 8px;
+      }
+
+      #workspaces button {
         border-radius: 8px;
         border: none;
         outline: none;
@@ -127,9 +153,14 @@
         background: @surface;
       }
 
-      #workspaces button.active {
+      #workspaces button.active,
+      #custom-special {
         color: @crust;
         background: @accent;
+      }
+
+      #custom-special {
+        margin-left: -8px;
       }
 
       #workspaces button.urgent {

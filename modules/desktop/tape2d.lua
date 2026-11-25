@@ -391,8 +391,12 @@ hl.layout.register("tape2d", {
 
 local monitor_focus = {}
 
+local function on_special(window)
+  return window.workspace ~= nil and window.workspace.special
+end
+
 local function remember_monitor_focus(window)
-  if window and window.monitor then
+  if window and window.monitor and not on_special(window) then
     monitor_focus[window.monitor.name] = window.address
   end
 end
@@ -412,7 +416,7 @@ function tape2d_focus_monitor(delta)
 
   local address = monitor_focus[target.name]
   local window = address and hl.get_window("address:" .. address)
-  if window then
+  if window and not on_special(window) then
     hl.dispatch(hl.dsp.focus({ window = "address:" .. address }))
   else
     hl.dispatch(hl.dsp.focus({ monitor = target.name }))

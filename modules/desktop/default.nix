@@ -132,10 +132,16 @@
         hl.bind(mod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i, follow = true }))
       end
 
+      local function signal_waybar(number)
+        hl.exec_cmd("pkill -RTMIN+" .. number .. " waybar")
+      end
+
+      hl.on("monitor.focused", function() signal_waybar(8) end)
+      hl.on("workspace.special_active", function() signal_waybar(9) end)
+
       hl.on("hyprland.start", function()
         hl.exec_cmd("uwsm finalize")
         hl.exec_cmd([[sh -c 'exec swaybg -i "$HOME/Pictures/wallpaper.png" -m fill']])
-        hl.exec_cmd("waybar")
       end)
     '';
   };
