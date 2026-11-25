@@ -4,6 +4,8 @@
     auth_mode = "pam"
     fps = 60
     bitrate = 20000000
+
+    on_session_end = "hyprctl eval 'hl.dispatch(hl.dsp.exec_cmd(\"pidof hyprlock || hyprlock\"))' || true"
   '';
 
   systemd.user.services.hypr-rdp = {
