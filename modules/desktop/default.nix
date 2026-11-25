@@ -2,13 +2,20 @@
   imports = [
     ./waybar.nix
     ./fuzzel.nix
+    ./hyprlock.nix
+    ./hypridle.nix
   ];
+
+  programs.bash.profileExtra = ''
+    if [ "$(tty)" = /dev/tty1 ] && uwsm check may-start; then
+      exec uwsm start hyprland.desktop
+    fi
+  '';
 
   wayland.windowManager.hyprland = {
     enable = true;
     configType = "lua";
-
-    # Nested Hyprland inside GNOME must not stop graphical-session.target.
+    # use uwsm
     systemd.enable = false;
 
     settings = {
@@ -58,16 +65,12 @@
           mode = "1600x2560@60.147";
           position = "0x1440";
           scale = 2;
-          transform = 1;
+          transform = 3;
         }
         {
           output = "DP-1";
           mode = "2560x1440@59.968";
           position = "0x0";
-          scale = 1;
-        }
-        {
-          output = "";
           scale = 1;
         }
       ];
@@ -89,7 +92,7 @@
     extraLuaFiles."tape2d" = ./tape2d.lua;
 
     extraConfig = ''
-      local mod = "CTRL + ALT"
+      local mod = "ALT"
 
       hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
       hl.env("XCURSOR_SIZE", "24")
@@ -104,6 +107,7 @@
       hl.bind(mod .. " + Q", hl.dsp.window.close())
       hl.bind(mod .. " + F", hl.dsp.layout("zoom"))
       hl.bind(mod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
+      hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("hyprlock"))
 
       hl.bind(mod .. " + O", function() tape2d_focus_monitor(-1) end)
       hl.bind(mod .. " + P", function() tape2d_focus_monitor(1) end)
@@ -128,6 +132,7 @@
       end
 
       hl.on("hyprland.start", function()
+        hl.exec_cmd("uwsm finalize")
         hl.exec_cmd([[sh -c 'exec swaybg -i "$HOME/Pictures/wallpaper.png" -m fill']])
         hl.exec_cmd("waybar")
       end)
