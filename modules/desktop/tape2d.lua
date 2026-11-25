@@ -9,12 +9,15 @@
 --                               otherwise split off into a new column
 --   moveup / movedown           reorder the window inside its column
 --   grow / shrink / width <f>   resize the focused column
+--   zoom                        fill the viewport, keeping the tape margins
 --   taller / shorter           resize the focused window vertically
 --   reset                       restore default widths/offsets/heights
 
 local DEFAULT_WIDTH = 0.5
 local MIN_WIDTH = 0.2
 local WIDTH_STEP = 0.1
+local MARGIN = 10
+local MARGIN_V = 10
 local HEIGHT_STEP = 0.1
 
 local STATE = {}
@@ -41,7 +44,7 @@ local function state_for(ctx)
   local id = workspace_id(ctx)
   local state = STATE[id]
   if not state then
-    state = { columns = {}, offset = 0, focus = nil, heights = {} }
+    state = { columns = {}, offset = 0, focus = nil, heights = {}, zoom = {} }
     STATE[id] = state
   end
   return state
@@ -71,6 +74,7 @@ local function sync(state, ctx)
     for row_index = #column.targets, 1, -1 do
       if not present[column.targets[row_index]] then
         state.heights[column.targets[row_index]] = nil
+        state.zoom[column.targets[row_index]] = nil
         table.remove(column.targets, row_index)
       end
     end
@@ -100,50 +104,54 @@ end
 
 local function place(ctx, state, present)
   local area = ctx.area
+  local view_width = math.max(area.w - 2 * MARGIN, 1)
+  local view_height = math.max(area.h - 2 * MARGIN_V, 1)
   local total_width = 0
-  for _, column in ipairs(state.columns) do total_width = total_width + area.w * column.width end
+  for _, column in ipairs(state.columns) do total_width = total_width + view_width * column.width end
 
   local active = active_target(ctx)
   local active_id = active and target_id(active)
   local active_column, active_row
   if active_id then active_column, active_row = locate(state, active_id) end
+  if active_column and active_id then state.columns[active_column].last = active_id end
 
   local focus_changed = active_id ~= state.focus
   state.focus = active_id
 
   if focus_changed and active_column then
     local x = 0
-    for index = 1, active_column - 1 do x = x + area.w * state.columns[index].width end
-    local width = area.w * state.columns[active_column].width
+    for index = 1, active_column - 1 do x = x + view_width * state.columns[index].width end
+    local width = view_width * state.columns[active_column].width
     if x < state.offset then state.offset = x end
-    if x + width > state.offset + area.w then state.offset = x + width - area.w end
+    if x + width > state.offset + view_width then state.offset = x + width - view_width end
   end
-  state.offset = clamp(state.offset, 0, math.max(0, total_width - area.w))
 
-  local x = area.x - state.offset
+  state.offset = clamp(state.offset, 0, math.max(0, total_width - view_width))
+
+  local x = area.x + MARGIN - state.offset
   for column_index, column in ipairs(state.columns) do
-    local width = area.w * column.width
+    local width = view_width * column.width
     local count = math.max(#column.targets, 1)
     local default_fraction = 1 / math.min(count, 2)
 
     local heights, total = {}, 0
     for row_index, id in ipairs(column.targets) do
-      heights[row_index] = area.h * (state.heights[id] or default_fraction)
+      heights[row_index] = view_height * (state.heights[id] or default_fraction)
       total = total + heights[row_index]
     end
-    local max_scroll = math.max(0, total - area.h)
+    local max_scroll = math.max(0, total - view_height)
 
     if focus_changed and column_index == active_column and active_row then
       local top = 0
       for index = 1, active_row - 1 do top = top + heights[index] end
       local bottom = top + heights[active_row]
       if top < column.scroll then column.scroll = top end
-      if bottom > column.scroll + area.h then column.scroll = bottom - area.h end
+      if bottom > column.scroll + view_height then column.scroll = bottom - view_height end
     end
 
     column.scroll = clamp(column.scroll, 0, max_scroll)
 
-    local y = area.y - column.scroll
+    local y = area.y + MARGIN_V - column.scroll
     for row_index, id in ipairs(column.targets) do
       local target = present[id]
       if target then
@@ -204,6 +212,29 @@ local function move_vertical(state, ctx, direction)
   column.targets[row_index], column.targets[swap_with] = column.targets[swap_with], column.targets[row_index]
 end
 
+local function toggle_zoom(state, ctx)
+  local active = active_target(ctx)
+  if not active then return end
+
+  local column_index, _ = locate(state, target_id(active))
+  if not column_index then return end
+
+  local column = state.columns[column_index]
+  local id = target_id(active)
+  local saved = state.zoom[id]
+
+  if saved then
+    column.width = saved.width
+    state.heights[id] = saved.height
+    state.zoom[id] = nil
+    return
+  end
+
+  state.zoom[id] = { width = column.width, height = state.heights[id] }
+  column.width = 1.0
+  state.heights[id] = 1.0
+end
+
 local function adjust_height(state, ctx, delta)
   local active = active_target(ctx)
   if not active then return end
@@ -224,6 +255,32 @@ local function target_for(ctx, id)
   end
 end
 
+local function row_of(column, id)
+  for row_index, entry in ipairs(column.targets) do
+    if entry == id then return row_index end
+  end
+end
+
+local function visible_row(state, ctx, column, preferred)
+  local view_height = math.max(ctx.area.h - 2 * MARGIN_V, 1)
+  local count = math.max(#column.targets, 1)
+  local default_fraction = 1 / math.min(count, 2)
+
+  local best_row, best_visible, best_distance = 1, -1, math.huge
+  local top = 0
+  for row_index, id in ipairs(column.targets) do
+    local height = view_height * (state.heights[id] or default_fraction)
+    local visible = math.min(top + height, column.scroll + view_height) - math.max(top, column.scroll)
+    if visible < 0 then visible = 0 end
+    local distance = math.abs(row_index - (preferred or 1))
+    if visible > best_visible + 0.5 or (math.abs(visible - best_visible) <= 0.5 and distance < best_distance) then
+      best_row, best_visible, best_distance = row_index, visible, distance
+    end
+    top = top + height
+  end
+  return best_row
+end
+
 local function focus_in_direction(state, ctx, direction)
   local active = active_target(ctx)
   if not active then return end
@@ -238,7 +295,7 @@ local function focus_in_direction(state, ctx, direction)
     column_index = column_index + (direction == "left" and -1 or 1)
     local column = state.columns[column_index]
     if not column then return end
-    row_index = math.min(row_index, #column.targets)
+    row_index = (column.last and row_of(column, column.last)) or visible_row(state, ctx, column, row_index)
   end
 
   local column = state.columns[column_index]
@@ -293,6 +350,8 @@ hl.layout.register("tape2d", {
       column.width = clamp(column.width + WIDTH_STEP, MIN_WIDTH, 1)
     elseif command == "shrink" then
       column.width = clamp(column.width - WIDTH_STEP, MIN_WIDTH, 1)
+    elseif command == "zoom" then
+      toggle_zoom(state, ctx)
     elseif command == "taller" then
       adjust_height(state, ctx, HEIGHT_STEP)
     elseif command == "shorter" then
@@ -302,6 +361,7 @@ hl.layout.register("tape2d", {
     elseif command == "reset" then
       state.offset = 0
       state.heights = {}
+      state.zoom = {}
       for _, entry in ipairs(state.columns) do
         entry.width = DEFAULT_WIDTH
         entry.scroll = 0
@@ -316,8 +376,39 @@ hl.layout.register("tape2d", {
   end,
 })
 
+local monitor_focus = {}
+
+local function remember_monitor_focus(window)
+  if window and window.monitor then
+    monitor_focus[window.monitor.name] = window.address
+  end
+end
+
+function tape2d_focus_monitor(delta)
+  local monitors = hl.get_monitors()
+  if not monitors or #monitors < 2 then return end
+
+  local current = hl.get_active_monitor()
+  local index = 1
+  for i, monitor in ipairs(monitors) do
+    if current and monitor.name == current.name then index = i end
+  end
+
+  local target = monitors[((index - 1 + (delta or 1)) % #monitors) + 1]
+  if not target then return end
+
+  local address = monitor_focus[target.name]
+  local window = address and hl.get_window("address:" .. address)
+  if window then
+    hl.dispatch(hl.dsp.focus({ window = "address:" .. address }))
+  else
+    hl.dispatch(hl.dsp.focus({ monitor = target.name }))
+  end
+end
+
 hl.on("window.active", function(window)
   if not window then return end
+  remember_monitor_focus(window)
   hl.dispatch(hl.dsp.layout("follow"))
 end)
 
