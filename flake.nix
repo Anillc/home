@@ -4,7 +4,9 @@
   inputs.mnw.url = "github:Gerg-L/mnw";
   inputs.cryonet.url = "github:kagari-org/cryonet";
   inputs.sakanajs.url = "github:Anillc/sakanajs";
+  inputs.tablet.url = "github:Anillc/tablet";
   inputs.hypr-rdp.url = "github:MuNeNICK/hypr-rdp";
+  inputs.hypr-rdp.inputs.nixpkgs.follows = "tablet/nixpkgs";
   outputs = inputs@{
     self, nixpkgs, flake-parts, sops-nix, home-manager, deploy, nix-index-database, mnw, ...
   }: flake-parts.lib.mkFlake { inherit inputs; } ({ withSystem, ... }: {

@@ -475,8 +475,16 @@ local function remember_monitor_focus(window)
 end
 
 function tape2d_focus_monitor(delta)
-  local monitors = hl.get_monitors()
-  if not monitors or #monitors < 2 then return end
+  local all = hl.get_monitors()
+  if not all then return end
+
+  local monitors = {}
+  for _, monitor in ipairs(all) do
+    if monitor.x ~= -9999 and monitor.y ~= -9999 then
+      monitors[#monitors + 1] = monitor
+    end
+  end
+  if #monitors < 2 then return end
 
   local current = hl.get_active_monitor()
   local index = 1
