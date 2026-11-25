@@ -90,13 +90,20 @@ local function sync(state, ctx)
   for _, target in ipairs(ctx.targets) do
     local id = target_id(target)
     if not locate(state, id) then
-      table.insert(state.columns, insert_at, { width = DEFAULT_WIDTH, scroll = 0, targets = { id } })
+      local width = #state.columns == 0 and 1.0 or DEFAULT_WIDTH
+      table.insert(state.columns, insert_at, { width = width, auto = true, scroll = 0, targets = { id } })
       insert_at = insert_at + 1
     end
   end
 
+  for _, column in ipairs(state.columns) do
+    if column.auto then
+      column.width = #state.columns == 1 and 1.0 or DEFAULT_WIDTH
+    end
+  end
+
   if #state.columns == 0 then
-    table.insert(state.columns, { width = DEFAULT_WIDTH, scroll = 0, targets = {} })
+    table.insert(state.columns, { width = DEFAULT_WIDTH, auto = true, scroll = 0, targets = {} })
   end
 
   return present
@@ -187,7 +194,7 @@ local function move_horizontal(state, ctx, direction)
   if #column.targets > 1 then
     table.remove(column.targets, row_index)
     local insert_at = step < 0 and column_index or column_index + 1
-    table.insert(state.columns, insert_at, { width = column.width, scroll = 0, targets = { id } })
+    table.insert(state.columns, insert_at, { width = column.width, auto = true, scroll = 0, targets = { id } })
     return
   end
 
@@ -225,12 +232,14 @@ local function toggle_zoom(state, ctx)
 
   if saved then
     column.width = saved.width
+    column.auto = saved.auto
     state.heights[id] = saved.height
     state.zoom[id] = nil
     return
   end
 
-  state.zoom[id] = { width = column.width, height = state.heights[id] }
+  state.zoom[id] = { width = column.width, height = state.heights[id], auto = column.auto }
+  column.auto = false
   column.width = 1.0
   state.heights[id] = 1.0
 end
@@ -347,8 +356,10 @@ hl.layout.register("tape2d", {
     elseif command == "movedown" then
       move_vertical(state, ctx, "down")
     elseif command == "grow" then
+      column.auto = false
       column.width = clamp(column.width + WIDTH_STEP, MIN_WIDTH, 1)
     elseif command == "shrink" then
+      column.auto = false
       column.width = clamp(column.width - WIDTH_STEP, MIN_WIDTH, 1)
     elseif command == "zoom" then
       toggle_zoom(state, ctx)
@@ -357,13 +368,15 @@ hl.layout.register("tape2d", {
     elseif command == "shorter" then
       adjust_height(state, ctx, -HEIGHT_STEP)
     elseif command == "width" then
+      column.auto = false
       column.width = clamp(tonumber(argument) or column.width, MIN_WIDTH, 1)
     elseif command == "reset" then
       state.offset = 0
       state.heights = {}
       state.zoom = {}
       for _, entry in ipairs(state.columns) do
-        entry.width = DEFAULT_WIDTH
+        entry.auto = true
+        entry.width = #state.columns == 1 and 1.0 or DEFAULT_WIDTH
         entry.scroll = 0
       end
     else

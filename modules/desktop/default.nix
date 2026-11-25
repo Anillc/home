@@ -36,8 +36,6 @@
           rounding = 10;
           active_opacity = 1.0;
           inactive_opacity = 0.92;
-          dim_inactive = true;
-          dim_strength = 0.12;
           shadow = { enabled = true; range = 8; render_power = 3; color = "rgba(0f1419aa)"; };
           blur = {
             enabled = true;
@@ -108,6 +106,9 @@
       hl.bind(mod .. " + F", hl.dsp.layout("zoom"))
       hl.bind(mod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
       hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("hyprlock"))
+
+      hl.bind(mod .. " + S", hl.dsp.workspace.toggle_special("magic"))
+      hl.bind(mod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic", follow = false }))
 
       hl.bind(mod .. " + O", function() tape2d_focus_monitor(-1) end)
       hl.bind(mod .. " + P", function() tape2d_focus_monitor(1) end)
