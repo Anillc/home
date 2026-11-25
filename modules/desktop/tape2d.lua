@@ -44,7 +44,7 @@ local function state_for(ctx)
   local id = workspace_id(ctx)
   local state = STATE[id]
   if not state then
-    state = { columns = {}, offset = 0, focus = nil, heights = {}, zoom = {} }
+    state = { columns = {}, offset = 0, focus = nil, heights = {}, zoom = {}, floating = {} }
     STATE[id] = state
   end
   return state
@@ -65,6 +65,38 @@ local function active_target(ctx)
   end
 end
 
+local function column_index_of(state, id)
+  for column_index, column in ipairs(state.columns) do
+    for _, entry in ipairs(column.targets) do
+      if entry == id then return column_index end
+    end
+  end
+end
+
+local function insert_restored(state, id, saved)
+  local anchor_column = saved.column_anchor and column_index_of(state, saved.column_anchor)
+  if anchor_column then
+    local column = state.columns[anchor_column]
+    local row = clamp(saved.row, 1, #column.targets + 1)
+    table.insert(column.targets, row, id)
+    if saved.height ~= nil then state.heights[id] = saved.height end
+    return
+  end
+
+  local index
+  if saved.prev_anchor then
+    local prev = column_index_of(state, saved.prev_anchor)
+    if prev then index = prev + 1 end
+  end
+  if not index and saved.next_anchor then
+    index = column_index_of(state, saved.next_anchor)
+  end
+  index = index or clamp(saved.column, 1, #state.columns + 1)
+
+  table.insert(state.columns, index, { width = saved.width, auto = saved.auto, scroll = 0, targets = { id } })
+  if saved.height ~= nil then state.heights[id] = saved.height end
+end
+
 local function sync(state, ctx)
   local present = {}
   for _, target in ipairs(ctx.targets) do present[target_id(target)] = target end
@@ -72,9 +104,29 @@ local function sync(state, ctx)
   for column_index = #state.columns, 1, -1 do
     local column = state.columns[column_index]
     for row_index = #column.targets, 1, -1 do
-      if not present[column.targets[row_index]] then
-        state.heights[column.targets[row_index]] = nil
-        state.zoom[column.targets[row_index]] = nil
+      local id = column.targets[row_index]
+      if not present[id] then
+        local column_anchor
+        for _, other in ipairs(column.targets) do
+          if other ~= id then
+            column_anchor = other
+            break
+          end
+        end
+
+        state.floating[id] = {
+          row = row_index,
+          column = column_index,
+          width = column.width,
+          auto = column.auto,
+          height = state.heights[id],
+          column_anchor = column_anchor,
+          prev_anchor = state.columns[column_index - 1] and state.columns[column_index - 1].targets[1],
+          next_anchor = state.columns[column_index + 1] and state.columns[column_index + 1].targets[1],
+        }
+
+        state.heights[id] = nil
+        state.zoom[id] = nil
         table.remove(column.targets, row_index)
       end
     end
@@ -90,9 +142,15 @@ local function sync(state, ctx)
   for _, target in ipairs(ctx.targets) do
     local id = target_id(target)
     if not locate(state, id) then
-      local width = #state.columns == 0 and 1.0 or DEFAULT_WIDTH
-      table.insert(state.columns, insert_at, { width = width, auto = true, scroll = 0, targets = { id } })
-      insert_at = insert_at + 1
+      local saved = state.floating[id]
+      if saved then
+        state.floating[id] = nil
+        insert_restored(state, id, saved)
+      else
+        local width = #state.columns == 0 and 1.0 or DEFAULT_WIDTH
+        table.insert(state.columns, insert_at, { width = width, auto = true, scroll = 0, targets = { id } })
+        insert_at = insert_at + 1
+      end
     end
   end
 
@@ -292,7 +350,10 @@ end
 
 local function focus_in_direction(state, ctx, direction)
   local active = active_target(ctx)
-  if not active then return end
+  if not active then
+    hl.dispatch(hl.dsp.focus({ direction = direction }))
+    return
+  end
 
   local column_index, row_index = locate(state, target_id(active))
   if not column_index then return end
@@ -323,13 +384,24 @@ hl.layout.register("tape2d", {
   end,
 
   layout_msg = function(ctx, msg)
-    if #ctx.targets == 0 then return true end
+    local command, argument = msg:match("^(%S+)%s*(.*)$")
+
+    if #ctx.targets == 0 then
+      if command == "focusleft" or command == "focusright" or command == "focusup" or command == "focusdown" then
+        hl.dispatch(hl.dsp.focus({ direction = command:sub(6) }))
+      end
+      return true
+    end
 
     local state = state_for(ctx)
     local present = sync(state, ctx)
-    local command, argument = msg:match("^(%S+)%s*(.*)$")
     local column_index = focused(state, ctx)
     local column = state.columns[column_index]
+
+    if not active_target(ctx) and
+       (command == "grow" or command == "shrink" or command == "width" or command == "zoom" or command == "taller" or command == "shorter") then
+      return true
+    end
 
     if command == "follow" then
       -- relayout only; place() below scrolls the active window into view
@@ -374,6 +446,7 @@ hl.layout.register("tape2d", {
       state.offset = 0
       state.heights = {}
       state.zoom = {}
+      state.floating = {}
       for _, entry in ipairs(state.columns) do
         entry.auto = true
         entry.width = #state.columns == 1 and 1.0 or DEFAULT_WIDTH
@@ -422,6 +495,16 @@ function tape2d_focus_monitor(delta)
     hl.dispatch(hl.dsp.focus({ monitor = target.name }))
   end
 end
+
+hl.on("window.destroy", function(window)
+  if not window then return end
+  local id = tostring(window.stable_id)
+  for _, state in pairs(STATE) do
+    state.floating[id] = nil
+    state.heights[id] = nil
+    state.zoom[id] = nil
+  end
+end)
 
 hl.on("window.active", function(window)
   if not window then return end

@@ -95,6 +95,13 @@
       hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
       hl.env("XCURSOR_SIZE", "24")
 
+      hl.window_rule({
+        name = "float-dialogs";
+        match = { class = "^(xdg-desktop-portal-.*|pavucontrol|blueman-manager|nm-connection-editor)$" };
+        float = true;
+        center = true;
+      })
+
       hl.animation({ leaf = "workspaces", enabled = true, speed = 1, bezier = "default", style = "slidevert" })
       for _, leaf in ipairs({ "global", "windows", "windowsIn", "windowsOut", "fade", "layers" }) do
         hl.animation({ leaf = leaf, enabled = true, speed = 2, bezier = "default" })
@@ -107,11 +114,16 @@
       hl.bind(mod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
       hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("hyprlock"))
 
+      hl.bind(mod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+      hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
+      hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+
       hl.bind(mod .. " + S", hl.dsp.workspace.toggle_special("magic"))
       hl.bind(mod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic", follow = false }))
 
       hl.bind(mod .. " + O", function() tape2d_focus_monitor(-1) end)
       hl.bind(mod .. " + P", function() tape2d_focus_monitor(1) end)
+
       hl.bind(mod .. " + H", hl.dsp.layout("focusleft"))
       hl.bind(mod .. " + L", hl.dsp.layout("focusright"))
       hl.bind(mod .. " + K", hl.dsp.layout("focusup"))
