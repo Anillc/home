@@ -4,6 +4,7 @@
     ./fuzzel.nix
     ./hyprlock.nix
     ./hypridle.nix
+    ./hypr-rdp.nix
   ];
 
   programs.bash.profileExtra = ''
@@ -90,7 +91,7 @@
     extraLuaFiles."tape2d" = ./tape2d.lua;
 
     extraConfig = ''
-      local mod = "ALT"
+      local mod = "SUPER"
 
       hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
       hl.env("XCURSOR_SIZE", "24")
