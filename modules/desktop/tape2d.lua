@@ -517,6 +517,10 @@ end)
 hl.on("window.active", function(window)
   if not window then return end
   remember_monitor_focus(window)
-  hl.dispatch(hl.dsp.layout("follow"))
+
+  local workspace = hl.get_active_workspace()
+  if workspace and workspace.tiled_layout == "lua:tape2d" then
+    hl.dispatch(hl.dsp.layout("follow"))
+  end
 end)
 
