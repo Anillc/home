@@ -36,10 +36,6 @@ let
         { rule_set = "s_geoip-cn"; outbound = "s_direct"; }
         { rule_set = "s_geosite-cn"; outbound = "s_direct"; }
         { ip_is_private = true; outbound = "s_direct"; }
-        {
-          domain = [ "la13-idrive.kagari.org" "sg01-idrive.kagari.org" ];
-          outbound = "s_direct";
-        }
       ];
       final = "s_out";
       auto_detect_interface = true;
@@ -81,8 +77,6 @@ let
         }
       ];
       rules = [
-        { domain_suffix = [ ".kn" ]; query_type = [ "AAAA" ]; action = "route"; server = "s_kn-dns"; }
-        { query_type = [ "AAAA" ]; action = "reject"; }
         { wifi_ssid = [ "Anillc's AP" ]; action = "route"; server = "s_local-ap"; }
         { domain_suffix = [ ".kn" ]; action = "route"; server = "s_kn-dns"; }
         { rule_set = "s_geosite-cn"; action = "route"; server = "s_local"; }
