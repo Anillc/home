@@ -39,7 +39,7 @@
       };
 
       clock = {
-        format = "{:%H:%M}";
+        format = "{:%Y-%m-%d %H:%M}";
         tooltip-format = "<tt><small>{calendar}</small></tt>";
         calendar = {
           mode = "month";
