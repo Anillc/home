@@ -1,5 +1,5 @@
 { config, pkgs, ... }: {
-  home.packages = [ pkgs.grim pkgs.slurp ];
+  home.packages = [ pkgs.grim pkgs.slurp pkgs.wl-clipboard pkgs.jq ];
 
   programs.satty = {
     enable = true;

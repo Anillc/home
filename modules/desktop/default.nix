@@ -109,6 +109,7 @@
         match = { class = "com.gabm.satty" };
         float = true;
         center = true;
+        no_anim = true;
       })
 
       hl.window_rule({
@@ -130,8 +131,13 @@
       hl.bind(mod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
       hl.bind(mod .. " + Escape", hl.dsp.exec_cmd("hyprlock"))
 
-      hl.bind("Print", hl.dsp.exec_cmd([[grim -g "$(slurp -c '#ff0000ff')" -t ppm - | satty -f -]]))
-      hl.bind("SHIFT + Print", hl.dsp.exec_cmd([[grim -t ppm - | satty -f -]]))
+      hl.bind("Print", hl.dsp.exec_cmd([[
+        mon=$(hyprctl -j monitors | ${pkgs.jq}/bin/jq -r '.[] | select(.focused) | .name')
+        grim -o "$mon" -t png - | satty -f - --fullscreen --initial-tool crop --copy-command wl-copy --early-exit copy --actions-on-enter save-to-clipboard --actions-on-escape exit
+      ]]))
+      hl.bind("SHIFT + Print", hl.dsp.exec_cmd([[
+        grim -t png - | satty -f - --fullscreen --copy-command wl-copy --early-exit copy --actions-on-enter save-to-clipboard --actions-on-escape exit
+      ]]))
 
       hl.bind(mod .. " + V", hl.dsp.window.float({ action = "toggle" }))
       hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
