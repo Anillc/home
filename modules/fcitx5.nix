@@ -8,6 +8,12 @@
           inherit (fetch.rime-flypy) pname version src;
           nativeBuildInputs = [ librime ];
           prePatch = "cp -r ${fetch.rime-prelude.src}/* .";
+          # Flypy's Release+comma/period 顶屏 bindings misfire on fast input:
+          # the comma release can land after the next key starts composing,
+          # which commits the candidate and inserts an extra punctuation.
+          postPatch = ''
+            find . -name 'flypy.schema.yaml' -exec sed -i '/Release+comma/d; /Release+period/d' {} +
+          '';
           makeFlags = [ "PREFIX=$(out)" ];
         }) {};
       in with pkgs; [
