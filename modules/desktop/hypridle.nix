@@ -31,7 +31,7 @@
               sleep 30
             done
           ''}";
-          on-resume = "pkill -f hypridle-locked-suspend >/dev/null 2>&1 || true; hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })'";
+          on-resume = "pkill -f '[h]ypridle-locked-suspend' >/dev/null 2>&1 || true; hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })'";
         }
       ];
     };
