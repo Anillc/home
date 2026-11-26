@@ -1,4 +1,22 @@
-{ inputs', ... }: {
+{ inputs', ... }:
+let
+  hypr-rdp = inputs'.hypr-rdp.packages.hypr-rdp.overrideAttrs (old: {
+    postPatch = (old.postPatch or "") + ''
+      substituteInPlace src/capture/mod.rs \
+        --replace-fail "inner.update_tx = tx.clone();" \
+        "inner.update_tx = tx.clone();
+        let _ = tx.try_send(DisplayUpdate::HidePointer);
+        let _ = tx.try_send(DisplayUpdate::RGBAPointer(ironrdp_server::RGBAPointer {
+          cache_index: 0,
+          width: 1,
+          height: 1,
+          hot_x: 0,
+          hot_y: 0,
+          data: vec![0, 0, 0, 0],
+        }));"
+    '';
+  });
+in {
   xdg.configFile."hypr-rdp/config.toml".text = ''
     bind = "0.0.0.0:3389"
     auth_mode = "pam"
@@ -19,7 +37,7 @@
     };
 
     Service = {
-      ExecStart = "${inputs'.hypr-rdp.packages.hypr-rdp}/bin/hypr-rdp";
+      ExecStart = "${hypr-rdp}/bin/hypr-rdp";
       Restart = "on-failure";
       RestartSec = 5;
     };
