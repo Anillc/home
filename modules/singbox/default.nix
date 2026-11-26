@@ -105,7 +105,7 @@ let
       {
         type = "mixed";
         tag = "s_mixed-in";
-        listen = "127.0.0.1";
+        listen = "::";
         listen_port = 7897;
       }
     ];
