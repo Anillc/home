@@ -12,7 +12,7 @@
 
       modules-left = [ "custom/focus" "hyprland/workspaces" "custom/special" "hyprland/window" ];
       modules-center = [ "clock" ];
-      modules-right = [ "backlight" "pulseaudio" "network" "custom/battery" "tray" ];
+      modules-right = [ "backlight" "pulseaudio" "network" "custom/dnd" "custom/battery" "tray" ];
 
       "custom/focus" = {
         exec = "hyprctl -j monitors 2>/dev/null | ${pkgs.jq}/bin/jq -r --arg out \"$WAYBAR_OUTPUT_NAME\" 'first(.[] | select(.name == $out) | (if .focused then \"●\" else \"○\" end)) // \"○\"' 2>/dev/null";
@@ -70,6 +70,13 @@
         format-ethernet = "󰈀 {ifname}";
         format-disconnected = "󰤭 offline";
         tooltip-format = "{ifname}  {ipaddr}";
+      };
+
+      "custom/dnd" = {
+        exec = "${config.home.profileDirectory}/bin/waybar-dnd status";
+        return-type = "json";
+        signal = 11;
+        on-click = "${config.home.profileDirectory}/bin/waybar-dnd toggle";
       };
 
       "custom/battery" = {
@@ -202,6 +209,18 @@
 
       #network.disconnected {
         color: @red;
+      }
+
+      #custom-dnd {
+        padding: 0 10px;
+      }
+
+      #custom-dnd.on {
+        color: @overlay;
+      }
+
+      #custom-dnd.off {
+        color: @yellow;
       }
 
       #custom-battery {

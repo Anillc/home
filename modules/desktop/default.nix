@@ -6,6 +6,7 @@
     ./hypridle.nix
     ./hypr-rdp.nix
     ./battery.nix
+    ./mako.nix
     ./satty.nix
   ];
 
