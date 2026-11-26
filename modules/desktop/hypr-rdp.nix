@@ -3,7 +3,9 @@
     bind = "0.0.0.0:3389"
     auth_mode = "pam"
     fps = 60
-    bitrate = 20000000
+    bitrate = 15000000
+    capture_mode = "ext"
+    max_frames_in_flight = 1
 
     on_session_end = "hyprctl eval 'hl.dispatch(hl.dsp.exec_cmd(\"pidof hyprlock || hyprlock\"))' || true"
   '';
