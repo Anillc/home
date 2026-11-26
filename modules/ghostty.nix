@@ -3,6 +3,7 @@
     enable = true;
     settings = {
       term = "xterm-256color";
+      clipboard-read = "allow";
       background-opacity = 0.85;
       background = "#141a21";
       foreground = "#e8f4f5";
