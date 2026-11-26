@@ -18,7 +18,7 @@ let
     ../modules/vivaldi.nix
     ../modules/fcitx5.nix
     ../modules/multica
-    ../modules/cryonet
+    ../modules/singbox
   ];
 in {
   imports = modules;
@@ -27,5 +27,5 @@ in {
     "age1p9vcj2y2q59reuswpwjdqj8j3gz5yhz77qm9qeua4f5cc3xe8gqqf698t8" # duet
   ];
 
-  cryonet.id = 252;
+  singbox.node = "duet";
 }

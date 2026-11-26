@@ -2,7 +2,8 @@
   inputs.deploy.url = "github:serokell/deploy-rs";
   inputs.nix-index-database.url = "github:nix-community/nix-index-database";
   inputs.mnw.url = "github:Gerg-L/mnw";
-  inputs.cryonet.url = "github:kagari-org/cryonet";
+  inputs.sing-portal.url = "github:kagari-org/sing-portal";
+  inputs.sing-portal.inputs.nixpkgs.follows = "nixpkgs";
   inputs.sakanajs.url = "github:Anillc/sakanajs";
   inputs.tablet.url = "github:Anillc/tablet";
   inputs.hypr-rdp.url = "github:MuNeNICK/hypr-rdp";
