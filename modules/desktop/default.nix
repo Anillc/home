@@ -5,6 +5,7 @@
     ./hyprlock.nix
     ./hypridle.nix
     ./hypr-rdp.nix
+    ./battery.nix
     ./satty.nix
   ];
 

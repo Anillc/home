@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ config, pkgs, ... }: {
   programs.waybar = {
     enable = true;
     systemd.enable = true;
@@ -12,7 +12,7 @@
 
       modules-left = [ "custom/focus" "hyprland/workspaces" "custom/special" "hyprland/window" ];
       modules-center = [ "clock" ];
-      modules-right = [ "backlight" "pulseaudio" "network" "battery" "tray" ];
+      modules-right = [ "backlight" "pulseaudio" "network" "custom/battery" "tray" ];
 
       "custom/focus" = {
         exec = "hyprctl -j monitors 2>/dev/null | ${pkgs.jq}/bin/jq -r --arg out \"$WAYBAR_OUTPUT_NAME\" 'first(.[] | select(.name == $out) | (if .focused then \"●\" else \"○\" end)) // \"○\"' 2>/dev/null";
@@ -72,14 +72,12 @@
         tooltip-format = "{ifname}  {ipaddr}";
       };
 
-      battery = {
-        format = "{icon} {capacity}%";
-        format-icons = [ "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹" ];
-        states = {
-          warning = 30;
-          critical = 15;
-        };
-        tooltip-format = "{timeTo}";
+      "custom/battery" = {
+        exec = "${config.home.profileDirectory}/bin/waybar-battery";
+        return-type = "json";
+        interval = 30;
+        signal = 10;
+        on-click = "${config.home.profileDirectory}/bin/waybar-battery toggle";
       };
 
       tray.spacing = 10;
@@ -206,16 +204,20 @@
         color: @red;
       }
 
-      #battery {
+      #custom-battery {
         padding: 0 10px;
         color: @green;
       }
 
-      #battery.warning {
+      #custom-battery.eco {
+        color: @accent;
+      }
+
+      #custom-battery.warning {
         color: @yellow;
       }
 
-      #battery.critical {
+      #custom-battery.critical {
         color: @red;
         animation: blink 1.2s steps(2) infinite;
       }
