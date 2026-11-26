@@ -81,6 +81,8 @@ let
         }
       ];
       rules = [
+        { domain_suffix = [ ".kn" ]; query_type = [ "AAAA" ]; action = "route"; server = "s_kn-dns"; }
+        { query_type = [ "AAAA" ]; action = "reject"; }
         { wifi_ssid = [ "Anillc's AP" ]; action = "route"; server = "s_local-ap"; }
         { domain_suffix = [ ".kn" ]; action = "route"; server = "s_kn-dns"; }
         { rule_set = "s_geosite-cn"; action = "route"; server = "s_local"; }
