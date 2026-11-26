@@ -97,6 +97,11 @@
       hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
       hl.env("XCURSOR_SIZE", "24")
 
+      hl.device({
+        name = "doking-duet-5-usb-composite-device-touchpad";
+        natural_scroll = true;
+      })
+
       hl.window_rule({
         name = "float-satty";
         match = { class = "com.gabm.satty" };
