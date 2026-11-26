@@ -29,6 +29,7 @@ let
       rules = [
         { action = "sniff"; }
         { action =  "hijack-dns"; protocol = "dns"; }
+        { domain = [ "sing-portal.ani.llc" ]; outbound = "s_direct"; }
         { wifi_ssid = [ "Anillc's AP" ]; outbound = "s_direct"; }
         { domain_suffix = [ ".kn" ]; outbound = "s_ssh"; }
         { ip_cidr = [ "10.11.0.0/16" "fd11::/16" ]; outbound = "s_ssh"; }

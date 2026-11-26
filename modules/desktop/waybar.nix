@@ -21,7 +21,7 @@
       };
 
       "custom/special" = {
-        exec = "hyprctl -j monitors 2>/dev/null | ${pkgs.jq}/bin/jq -r 'any(.[]; ((.specialWorkspace.name // \"\") != \"\")) | if . then \"S\" else \"\" end' 2>/dev/null";
+        exec = "hyprctl -j monitors 2>/dev/null | ${pkgs.jq}/bin/jq -r --arg out \"$WAYBAR_OUTPUT_NAME\" 'first(.[] | select(.name == $out) | ((.specialWorkspace.name // \"\") != \"\")) // false | if . then \"S\" else \"\" end' 2>/dev/null";
         signal = 9;
         tooltip = false;
       };
@@ -121,12 +121,11 @@
       }
 
       #workspaces {
-        padding: 0 4px;
+        padding: 0 4px 0 0;
       }
 
       #custom-focus {
         padding: 0 0 0 8px;
-        margin-right: -6px;
         color: @accent;
       }
 
@@ -158,7 +157,7 @@
         background: @surface;
       }
 
-      #workspaces button.active,
+      #workspaces button.visible.hosting-monitor,
       #custom-special {
         color: @crust;
         background: @accent;
