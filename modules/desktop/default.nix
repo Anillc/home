@@ -151,6 +151,8 @@
 
       hl.bind(mod .. " + H", hl.dsp.layout("focusleft"))
       hl.bind(mod .. " + L", hl.dsp.layout("focusright"))
+      -- Windows RDP grabs Win+L, so Super+; is the fallback for focus right
+      hl.bind(mod .. " + semicolon", hl.dsp.layout("focusright"))
       hl.bind(mod .. " + K", hl.dsp.layout("focusup"))
       hl.bind(mod .. " + J", hl.dsp.layout("focusdown"))
       hl.bind(mod .. " + SHIFT + H", hl.dsp.layout("moveleft"))
